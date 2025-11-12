@@ -43,8 +43,7 @@ class _RootState extends State<Root> {
       backgroundColor: AppColors.whiteColor,
       body: PageView(
         controller: _pageController,
-        physics: const BouncingScrollPhysics(),
-        onPageChanged: (index) => setState(() => _currentIndex = index),
+        physics: const NeverScrollableScrollPhysics(),
         children: _screens,
       ),
       bottomNavigationBar: Container(
