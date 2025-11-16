@@ -39,7 +39,7 @@ class _HomeViewState extends State<HomeView> {
               floating: false,
               snap: false,
               automaticallyImplyLeading: false,
-              toolbarHeight: 250.h,
+              toolbarHeight: 260.h,
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
                 background: Column(
