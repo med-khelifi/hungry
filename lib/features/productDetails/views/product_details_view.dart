@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import 'package:hungry/core/constants/app_assets.dart';
 import 'package:hungry/core/constants/app_colors.dart';
 import 'package:hungry/features/productDetails/widgets/item_spacy_header.dart';
-import 'package:hungry/features/productDetails/widgets/topping_card.dart';
+import 'package:hungry/features/productDetails/widgets/price_details.dart';
+import 'package:hungry/features/productDetails/widgets/topping_list.dart';
+import 'package:hungry/shared/custom_button.dart';
 import 'package:hungry/shared/custom_text.dart';
 
 class ProductDetailsView extends StatelessWidget {
@@ -44,22 +45,7 @@ class ProductDetailsView extends StatelessWidget {
                 ),
               ),
               Gap(10.h),
-              SizedBox(
-                height: 110.h,
-                child: ListView.separated(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  separatorBuilder: (context, index) => Gap(30.w),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return ToppingCard(
-                      imagePath: AppAssets.tomato,
-                      onAdd: () {},
-                      title: "Tomato",
-                    );
-                  },
-                ),
-              ),
+              ToppingList(),
               Gap(50.h),
               Padding(
                 padding: EdgeInsets.only(left: 20.0.w),
@@ -71,22 +57,7 @@ class ProductDetailsView extends StatelessWidget {
                 ),
               ),
               Gap(10.h),
-              SizedBox(
-                height: 110.h,
-                child: ListView.separated(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  separatorBuilder: (context, index) => Gap(30.w),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 5,
-                  itemBuilder: (context, index) {
-                    return ToppingCard(
-                      imagePath: AppAssets.tomato,
-                      onAdd: () {},
-                      title: "Tomato",
-                    );
-                  },
-                ),
-              ),
+              ToppingList(),
               Gap(50.h),
               Padding(
                 padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 35.h),
@@ -102,46 +73,10 @@ class ProductDetailsView extends StatelessWidget {
                           fontSize: 16.sp,
                           color: AppColors.secondColor,
                         ),
-
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "\$",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 32.sp,
-                                  color: AppColors.primaryColor,
-                                ),
-                              ),
-                              TextSpan(
-                                text: "19.18",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 32.sp,
-                                  color: AppColors.secondColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        PriceDetails(text: "19.18"),
                       ],
                     ),
-                    MaterialButton(
-                      height: 70.h,
-                      color: AppColors.primaryColor,
-                      minWidth: 200.w,
-                      onPressed: () {},
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20.r),
-                      ),
-                      child: CustomText(
-                        text: "Add to cart",
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.whiteColor,
-                      ),
-                    ),
+                    CustomButton(text: "Add to cart", onPressed: () {}),
                   ],
                 ),
               ),

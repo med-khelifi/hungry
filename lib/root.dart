@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hungry/core/constants/app_colors.dart';
 import 'package:hungry/features/auth/views/profile_view.dart';
-import 'package:hungry/features/card/views/card_view.dart';
+import 'package:hungry/features/cart/views/card_view.dart';
 import 'package:hungry/features/home/views/home_view.dart';
 import 'package:hungry/features/orderHistory/views/order_history_view.dart';
 
@@ -20,7 +20,7 @@ class _RootState extends State<Root> {
 
   final List<Widget> _screens = const [
     HomeView(),
-    CardView(),
+    CartView(),
     OrderHistoryView(),
     ProfileView(),
   ];

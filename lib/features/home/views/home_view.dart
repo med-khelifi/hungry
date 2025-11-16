@@ -27,66 +27,69 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              backgroundColor: AppColors.whiteColor,
-              shadowColor: AppColors.whiteColor,
-              surfaceTintColor: AppColors.whiteColor,
-              pinned: true,
-              floating: false,
-              snap: false,
-              automaticallyImplyLeading: false,
-              toolbarHeight: 260.h,
-              elevation: 0,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Column(
-                  children: [
-                    Gap(20.h),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15.w),
-                      child: UserInfoHeader(),
-                    ),
-                    Gap(20.h),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15.w),
-                      child: SearchBoxHeader(),
-                    ),
-                    Gap(20.h),
-                    CategoriesListHeader(categories: _categories),
-                  ],
-                ),
-              ),
-            ),
-            SliverGap(10.h),
-            SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: 15.w),
-              sliver: SliverGrid(
-                delegate: SliverChildBuilderDelegate(
-                  childCount: 8,
-                  (context, index) => GestureDetector(
-                    onTap: () =>
-                        Navigator.pushNamed(context, Routes.productDetails),
-                    child: ItemCard(
-                      image: AppAssets.test,
-                      title: "Cheeseburger",
-                      subtitle: "Wendy's Burger",
-                      rating: "4.9",
-                    ),
+    return Scaffold(
+      backgroundColor: AppColors.whiteColor,
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                backgroundColor: AppColors.whiteColor,
+                shadowColor: AppColors.whiteColor,
+                surfaceTintColor: AppColors.whiteColor,
+                pinned: true,
+                floating: false,
+                snap: false,
+                automaticallyImplyLeading: false,
+                toolbarHeight: 260.h,
+                elevation: 0,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Column(
+                    children: [
+                      Gap(20.h),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
+                        child: UserInfoHeader(),
+                      ),
+                      Gap(20.h),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
+                        child: SearchBoxHeader(),
+                      ),
+                      Gap(20.h),
+                      CategoriesListHeader(categories: _categories),
+                    ],
                   ),
                 ),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 10.h,
-                  crossAxisSpacing: 10.w,
-                  childAspectRatio: 0.73,
+              ),
+              SliverGap(10.h),
+              SliverPadding(
+                padding: EdgeInsets.symmetric(horizontal: 15.w),
+                sliver: SliverGrid(
+                  delegate: SliverChildBuilderDelegate(
+                    childCount: 8,
+                    (context, index) => GestureDetector(
+                      onTap: () =>
+                          Navigator.pushNamed(context, Routes.productDetails),
+                      child: ItemCard(
+                        image: AppAssets.test,
+                        title: "Cheeseburger",
+                        subtitle: "Wendy's Burger",
+                        rating: "4.9",
+                      ),
+                    ),
+                  ),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 10.h,
+                    crossAxisSpacing: 10.w,
+                    childAspectRatio: 0.73,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
