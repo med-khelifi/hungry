@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/app_assets.dart';
 import 'package:hungry/core/constants/app_colors.dart';
+import 'package:hungry/core/constants/app_routes.dart';
 import 'package:hungry/features/home/widgets/categories_list_header.dart';
 import 'package:hungry/features/home/widgets/item_card.dart';
 import 'package:hungry/features/home/widgets/search_box_header.dart';
@@ -66,11 +67,15 @@ class _HomeViewState extends State<HomeView> {
               sliver: SliverGrid(
                 delegate: SliverChildBuilderDelegate(
                   childCount: 8,
-                  (context, index) => ItemCard(
-                    image: AppAssets.test,
-                    title: "Cheeseburger",
-                    subtitle: "Wendy's Burger",
-                    rating: "4.9",
+                  (context, index) => GestureDetector(
+                    onTap: () =>
+                        Navigator.pushNamed(context, Routes.productDetails),
+                    child: ItemCard(
+                      image: AppAssets.test,
+                      title: "Cheeseburger",
+                      subtitle: "Wendy's Burger",
+                      rating: "4.9",
+                    ),
                   ),
                 ),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

@@ -33,6 +33,9 @@ flutter:
     - assets/logosvg.svg
     - assets/profile.png
     - assets/test.png
+    - assets/productDetails.png
+    - assets/tomato.png
+    - assets/plus.svg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

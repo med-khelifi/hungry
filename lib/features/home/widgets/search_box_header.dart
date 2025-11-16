@@ -13,9 +13,9 @@ class SearchBoxHeader extends StatelessWidget {
       borderRadius: BorderRadius.circular(20.r),
       child: TextField(
         decoration: InputDecoration(
-          prefixIcon: Icon(CupertinoIcons.search, color: Colors.black),
+          prefixIcon: Icon(CupertinoIcons.search, color: AppColors.secondColor),
           hintText: "Search",
-          hintStyle: TextStyle(color: Color(0xff000000), fontSize: 16.sp),
+          hintStyle: TextStyle(color: AppColors.secondColor, fontSize: 16.sp),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide.none,
             borderRadius: BorderRadius.circular(20.r),
