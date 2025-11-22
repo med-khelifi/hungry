@@ -12,6 +12,7 @@ class CustomButton extends StatelessWidget {
   final double? fontSize;
   final FontWeight? fontWeight;
   final Color? color;
+  final Color? textColor;
 
   const CustomButton({
     super.key,
@@ -22,6 +23,7 @@ class CustomButton extends StatelessWidget {
     this.fontSize,
     this.fontWeight,
     this.color,
+    this.textColor,
     this.borderRadius,
   });
 
@@ -29,7 +31,7 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialButton(
       height: height ?? 70.h,
-      color: AppColors.primaryColor,
+      color: color ?? AppColors.primaryColor,
       minWidth: width ?? 200.w,
       onPressed: onPressed,
       shape: RoundedRectangleBorder(
@@ -39,7 +41,7 @@ class CustomButton extends StatelessWidget {
         text: text,
         fontSize: fontSize ?? 16.sp,
         fontWeight: fontWeight ?? FontWeight.w600,
-        color: color ?? AppColors.whiteColor,
+        color: textColor ?? AppColors.whiteColor,
       ),
     );
   }

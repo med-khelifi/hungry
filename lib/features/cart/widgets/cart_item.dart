@@ -7,7 +7,18 @@ import 'package:hungry/shared/custom_button.dart';
 import 'package:hungry/shared/custom_text.dart';
 
 class CartItem extends StatelessWidget {
-  const CartItem({super.key});
+  const CartItem({
+    super.key,
+    required this.value,
+    required this.onPressedDecrease,
+    required this.onPressedIncrease,
+    required this.onPressedRemove,
+  });
+
+  final String value;
+  final VoidCallback onPressedIncrease;
+  final VoidCallback onPressedRemove;
+  final VoidCallback onPressedDecrease;
 
   @override
   Widget build(BuildContext context) {
@@ -42,14 +53,14 @@ class CartItem extends StatelessWidget {
                     CustomButton(
                       text: "-",
                       fontWeight: FontWeight.bold,
-                      onPressed: () {},
+                      onPressed: onPressedDecrease,
                       width: 40.w,
                       height: 45.h,
                       borderRadius: 10.r,
                     ),
                     Gap(30.w),
                     CustomText(
-                      text: "2",
+                      text: value,
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w500,
                       color: AppColors.secondColor,
@@ -58,7 +69,7 @@ class CartItem extends StatelessWidget {
                     CustomButton(
                       text: "+",
                       fontWeight: FontWeight.bold,
-                      onPressed: () {},
+                      onPressed: onPressedIncrease,
                       width: 40.w,
                       height: 45.h,
                       borderRadius: 10.r,
@@ -68,7 +79,7 @@ class CartItem extends StatelessWidget {
                 Gap(40.h),
                 CustomButton(
                   text: "Remove",
-                  onPressed: () {},
+                  onPressed: onPressedRemove,
                   height: 45.w,
                   width: 155.h,
                   borderRadius: 20.r,

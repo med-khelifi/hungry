@@ -7,8 +7,21 @@ import 'package:hungry/features/productDetails/widgets/price_details.dart';
 import 'package:hungry/shared/custom_button.dart';
 import 'package:hungry/shared/custom_text.dart';
 
-class CartView extends StatelessWidget {
+class CartView extends StatefulWidget {
   const CartView({super.key});
+
+  @override
+  State<CartView> createState() => _CartViewState();
+}
+
+class _CartViewState extends State<CartView> {
+  late List<int> itemsCount;
+
+  @override
+  void initState() {
+    super.initState();
+    itemsCount = List.filled(10, 1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +45,20 @@ class CartView extends StatelessWidget {
           children: [
             Expanded(
               child: ListView.separated(
-                itemBuilder: (context, index) => CartItem(),
+                itemBuilder: (context, index) => CartItem(
+                  value: itemsCount[index].toString(),
+                  onPressedDecrease: () {
+                    if (itemsCount[index] > 1) {
+                      itemsCount[index]--;
+                      setState(() {});
+                    }
+                  },
+                  onPressedIncrease: () {
+                    itemsCount[index]++;
+                    setState(() {});
+                  },
+                  onPressedRemove: () {},
+                ),
                 separatorBuilder: (context, index) => Gap(20.h),
                 itemCount: 10,
               ),

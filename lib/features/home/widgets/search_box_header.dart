@@ -9,7 +9,7 @@ class SearchBoxHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 5,
+      elevation: 5.h,
       borderRadius: BorderRadius.circular(20.r),
       child: TextField(
         decoration: InputDecoration(

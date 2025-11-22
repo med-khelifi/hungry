@@ -6,4 +6,5 @@ class AppColors {
   static Color redColor = Color(0xffff0000);
   static Color secondColor = Color(0xff3C2F2F);
   static Color sliderInactive = Color(0xffddd8d2);
+  static Color greyColor = Color(0xffb4b4b4);
 }

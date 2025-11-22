@@ -63,7 +63,7 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ),
               ),
-              SliverGap(10.h),
+              SliverGap(15.h),
               SliverPadding(
                 padding: EdgeInsets.symmetric(horizontal: 15.w),
                 sliver: SliverGrid(
