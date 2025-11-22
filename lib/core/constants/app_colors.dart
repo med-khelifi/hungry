@@ -7,4 +7,7 @@ class AppColors {
   static Color secondColor = Color(0xff3C2F2F);
   static Color sliderInactive = Color(0xffddd8d2);
   static Color greyColor = Color(0xffb4b4b4);
+  static Color greyPaymentViewColor = Color(0xff7D7D7D);
+  static Color greyPaymentViewDividerColor = Color(0xffF0F0F0);
+  static Color pinkCheckboxColor = Color(0xffef2a39);
 }

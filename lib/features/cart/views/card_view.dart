@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/app_colors.dart';
+import 'package:hungry/core/constants/app_routes.dart';
 import 'package:hungry/features/cart/widgets/cart_item.dart';
 import 'package:hungry/features/productDetails/widgets/price_details.dart';
 import 'package:hungry/shared/custom_button.dart';
@@ -81,7 +82,9 @@ class _CartViewState extends State<CartView> {
                 ),
                 CustomButton(
                   text: "Checkout",
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, Routes.checkout);
+                  },
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w600,
                 ),

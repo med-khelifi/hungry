@@ -6,4 +6,6 @@ class AppAssets {
   static const String productDetails = "assets/productDetails.png";
   static const String tomato = "assets/tomato.png";
   static const String plus = "assets/plus.svg";
+  static const String dollar = "assets/dollar.png";
+  static const String viza = "assets/viza.png";
 }

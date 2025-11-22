@@ -50,18 +50,18 @@ class _ItemSpacyHeaderState extends State<ItemSpacyHeader> {
                     ],
                   ),
                 ),
-
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    Gap(25.h),
                     CustomText(
                       text: "Spacy",
                       color: AppColors.secondColor,
                       fontWeight: FontWeight.w500,
                       fontSize: 14.sp,
                     ),
-                    Gap(11.h),
+                    Gap(10.h),
                     Slider(
                       value: _sliderValue,
                       onChanged: (value) {
