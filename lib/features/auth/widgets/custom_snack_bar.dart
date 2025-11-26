@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 
 class CustomErrorSnackBar {
-  static void show(BuildContext context, String message) {
+  static void show(BuildContext context, String message, {bool isError = true}) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -12,26 +14,26 @@ class CustomErrorSnackBar {
         content: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.redAccent.withOpacity(0.95),
-            borderRadius: BorderRadius.circular(20),
+            color: isError ? Colors.redAccent.withOpacity(0.95) : Colors.greenAccent.withOpacity(0.95),
+            borderRadius: BorderRadius.circular(20.r),
             boxShadow: [
               BoxShadow(
-                color: Colors.red.withOpacity(0.4),
-                blurRadius: 12,
-                offset: const Offset(0, 4),
+                color: isError ? Colors.red.withOpacity(0.4) : Colors.green.withOpacity(0.4),
+                blurRadius: 12.r,
+                offset: Offset(0, 4.h),
               ),
             ],
           ),
           child: Row(
             children: [
               const Icon(Icons.error_rounded, color: Colors.white, size: 28),
-              const SizedBox(width: 12),
+               Gap( 12.w),
               Expanded(
                 child: Text(
                   message,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 15,
+                    fontSize: 15.sp,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -40,7 +42,7 @@ class CustomErrorSnackBar {
           ),
         ),
         duration: const Duration(seconds: 3),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       ),
     );
   }

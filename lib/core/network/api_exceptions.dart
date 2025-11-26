@@ -4,10 +4,14 @@ import 'package:hungry/core/network/api_error.dart';
 class ApiExceptions {
   static ApiError handleException(DioException e) {
     if (e.response != null && e.response?.data != null) {
-      final msg = e.response?.data['message'];
+      final msg = e.response?.data is Map<String,dynamic> ? e.response?.data['message'] : null;
       if (msg != null) {
         return ApiError(message: msg);
       }
+    }
+
+    if (e.response?.statusCode == 302) {
+      return ApiError(message: "this email is already used.");
     }
 
     switch (e.type) {
@@ -53,6 +57,8 @@ class ApiExceptions {
       case 500:
         return ApiError(message: "Server error. Try again later.");
       case 503:
+        return ApiError(message: "Service unavailable.");
+        case 503:
         return ApiError(message: "Service unavailable.");
       default:
         return ApiError(message: "HTTP error: $statusCode");

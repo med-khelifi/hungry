@@ -21,26 +21,39 @@ class AuthRepo {
         return Response.failure(result);
       }
 
-      if (result == null) {
-        return Response.failure(ApiError(message: 'Unknown error'));
+      final data = result.data;
+
+      if (data == null || data is! Map) {
+        return Response.failure(ApiError(message: 'Invalid backend response'));
       }
-      int code = result["code"] ?? 500;
+
+      int code = int.tryParse(data["code"].toString()) ?? 500;
+
       if (code < 200 || code > 299) {
         return Response.failure(
-          ApiError(message: result["message"] ?? "Unknown backend error"),
+          ApiError(message: data["message"] ?? "Unknown backend error"),
         );
       }
 
-      final user = UserModel.fromJson(result["data"]);
+      final userData = data["data"];
 
+      if (userData == null || userData is! Map) {
+        return Response.failure(ApiError(message: "Invalid user object"));
+      }
+
+      final user = UserModel.fromJson(userData as Map<String, dynamic>);
+
+      // حفظ التوكن
       if (user.token != null && user.token!.isNotEmpty) {
         await PrefHelper.saveToken(user.token!);
       }
+
       return Response.success(user);
     } catch (e) {
       return Response.failure(ApiError(message: e.toString()));
     }
   }
+
 
   Future<Response<UserModel>> register({
     required String name,
@@ -58,24 +71,39 @@ class AuthRepo {
         return Response.failure(result);
       }
 
-      if (result == null) {
-        return Response.failure(ApiError(message: 'Unknown error'));
+      // data section from response
+      final data = result.data;
+
+      if (data == null || data is! Map) {
+        return Response.failure(ApiError(message: 'Invalid backend response'));
       }
-      int code = result["code"] ?? 500;
+
+
+      int code = int.tryParse(data["code"].toString()) ?? 500;
+
       if (code < 200 || code > 299) {
         return Response.failure(
-          ApiError(message: result["message"] ?? "Unknown backend error"),
+          ApiError(message: data["message"] ?? "Unknown backend error"),
         );
       }
 
-      final user = UserModel.fromJson(result["data"]);
+      // extract user data
+      final userData = data["data"];
+
+      if (userData == null || userData is! Map) {
+        return Response.failure(ApiError(message: "Invalid user object"));
+      }
+
+      final user = UserModel.fromJson(userData as Map<String, dynamic>);
 
       if (user.token != null && user.token!.isNotEmpty) {
         await PrefHelper.saveToken(user.token!);
       }
+
       return Response.success(user);
     } catch (e) {
       return Response.failure(ApiError(message: e.toString()));
     }
   }
+
 }

@@ -56,16 +56,29 @@ class _SignupViewState extends State<SignupView> {
       CustomErrorSnackBar.show(context, "Please enter your full name");
       return;
     }
+
     if (userEmail.isEmpty) {
       CustomErrorSnackBar.show(context, "Please enter email");
       return;
     }
+
+    if (!userEmail.contains("@")) {
+      CustomErrorSnackBar.show(context, "Please enter a valid email");
+      return;
+    }
+
     if (passwordText.isEmpty) {
       CustomErrorSnackBar.show(context, "Please enter password");
       return;
     }
-    if (passwordText.isEmpty) {
-      CustomErrorSnackBar.show(context, "Please enter password");
+
+    if (passwordText.length < 8) {
+      CustomErrorSnackBar.show(context, "Password must be at least 8 characters long");
+      return;
+    }
+
+    if (confirmText.isEmpty) {
+      CustomErrorSnackBar.show(context, "Please enter confirm password");
       return;
     }
 
@@ -84,17 +97,19 @@ class _SignupViewState extends State<SignupView> {
     if (res.isFailure) {
       if (context.mounted) {
         // ignore: use_build_context_synchronously
-        CustomErrorSnackBar.show(context, res.error?.message ?? "Login failed");
+        CustomErrorSnackBar.show(context, res.error?.message ?? "Registration failed");
       }
     } else {
-      if (context.mounted) {
+      CustomErrorSnackBar.show(context, "Registration successful",isError: false);
+
+      /*if (context.mounted) {
         Navigator.pushNamedAndRemoveUntil(
           // ignore: use_build_context_synchronously
           context,
           Routes.root,
           (route) => false,
         );
-      }
+      }*/
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:hungry/core/network/api_error.dart';
 import 'package:hungry/core/network/api_exceptions.dart';
 import 'package:hungry/core/network/dio_client.dart';
 
@@ -8,36 +9,44 @@ class ApiService {
   Future<dynamic> get(String endpoint) async {
     try {
       final response = await _dioClient.dio.get(endpoint);
-      return response.data;
+      return response;
     } on DioException catch (e) {
       return ApiExceptions.handleException(e);
+    }catch(e){
+      return ApiError(message: e.toString());
     }
   }
 
-  Future<dynamic> post(String endpoint, dynamic data) async {
+  Future<dynamic> post(String endpoint, Map<String, dynamic> data) async {
     try {
       final response = await _dioClient.dio.post(endpoint, data: data);
-      return response.data;
+      return response;
     } on DioException catch (e) {
       return ApiExceptions.handleException(e);
+    }catch(e){
+      return ApiError(message: e.toString());
     }
   }
 
-  Future<dynamic> put(String endpoint, dynamic data) async {
+  Future<dynamic> put(String endpoint, Map<String, dynamic> data) async {
     try {
       final response = await _dioClient.dio.put(endpoint, data: data);
-      return response.data;
+      return response;
     } on DioException catch (e) {
       return ApiExceptions.handleException(e);
+    }catch(e){
+      return ApiError(message: e.toString());
     }
   }
 
-  Future<dynamic> delete(String endpoint, dynamic data) async {
+  Future<dynamic> delete(String endpoint, Map<String, dynamic> data) async {
     try {
       final response = await _dioClient.dio.delete(endpoint, data: data);
-      return response.data;
+      return response;
     } on DioException catch (e) {
       return ApiExceptions.handleException(e);
+    }catch(e){
+      return ApiError(message: e.toString());
     }
   }
 }
