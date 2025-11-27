@@ -61,7 +61,7 @@ class AuthRepo {
     required String password,
   }) async {
     try {
-      final result = await _apiService.post('/register', {
+      var result = await _apiService.post('/register', {
         'name': name,
         'email': email,
         'password': password,
@@ -99,6 +99,45 @@ class AuthRepo {
       if (user.token != null && user.token!.isNotEmpty) {
         await PrefHelper.saveToken(user.token!);
       }
+
+      return Response.success(user);
+    } catch (e) {
+      return Response.failure(ApiError(message: e.toString()));
+    }
+  }
+
+  Future<Response<UserModel>> getCurrentUserInfo() async {
+    try {
+      var result = await _apiService.get('/profile');
+
+      if (result is ApiError) {
+        return Response.failure(result);
+      }
+
+      // data section from response
+      final data = result.data;
+
+      if (data == null || data is! Map) {
+        return Response.failure(ApiError(message: 'Invalid backend response'));
+      }
+
+
+      int code = int.tryParse(data["code"].toString()) ?? 500;
+
+      if (code < 200 || code > 299) {
+        return Response.failure(
+          ApiError(message: data["message"] ?? "Unknown backend error"),
+        );
+      }
+
+      // extract user data
+      final userData = data["data"];
+
+      if (userData == null || userData is! Map) {
+        return Response.failure(ApiError(message: "Invalid user object"));
+      }
+
+      final user = UserModel.fromJson(userData as Map<String, dynamic>);
 
       return Response.success(user);
     } catch (e) {

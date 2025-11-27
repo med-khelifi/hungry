@@ -31,8 +31,8 @@ class _LoginViewState extends State<LoginView> {
   void initState() {
     super.initState();
     _authRepo = AuthRepo();
-    _email = TextEditingController();
-    _password = TextEditingController();
+    _email = TextEditingController(text: "khelifim440@gmail.com");
+    _password = TextEditingController(text: "123456789");
   }
 
   Future<void> login() async {
