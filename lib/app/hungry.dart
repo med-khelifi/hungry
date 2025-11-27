@@ -14,6 +14,7 @@ class Hungry extends StatelessWidget {
         routes: AppRoutes.routes,
         theme: ThemeData(
           splashColor: Colors.transparent,
+         // scaffoldBackgroundColor: Colors.transparent,
           highlightColor: Colors.transparent,
         ),
       ),

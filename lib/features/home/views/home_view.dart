@@ -88,6 +88,7 @@ class _HomeViewState extends State<HomeView> {
                   ),
                 ),
               ),
+              SliverGap(100.h),
             ],
           ),
         ),

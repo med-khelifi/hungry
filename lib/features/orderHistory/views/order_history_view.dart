@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:hungry/core/constants/app_colors.dart';
 import 'package:hungry/features/orderHistory/widgets/item_history_card.dart';
 
 class OrderHistoryView extends StatelessWidget {
@@ -8,14 +9,23 @@ class OrderHistoryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: ListView.separated(
-          padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 25.h),
-          itemBuilder: (context, index) => ItemHistoryCard(),
-          separatorBuilder: (context, index) => Gap(10.h),
-          itemCount: 10,
-        ),
+    return SafeArea(
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView.separated(
+              padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 25.h),
+              itemBuilder: (context, index) => index == 9 ? Column(
+                children: [
+                  ItemHistoryCard(),
+                  Gap(70.h),
+                ],
+              ) : ItemHistoryCard(),
+              separatorBuilder: (context, index) => Gap(10.h),
+              itemCount: 10,
+            ),
+          ),
+        ],
       ),
     );
   }

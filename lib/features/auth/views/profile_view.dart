@@ -78,75 +78,77 @@ class _ProfileViewState extends State<ProfileView> {
               enabled: isLoading,
               child: Column(
                 children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 20.h),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Gap(10.h),
+                  SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 20.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Gap(10.h),
 
-                          Center(
-                            child: Stack(
-                              alignment: Alignment.bottomRight,
-                              children: [
-                                CircleAvatar(
-                                  radius: 55.r,
-                                  backgroundColor: Colors.white.withOpacity(0.3),
-                                  backgroundImage: user?.image != null ? NetworkImage(user!.image!) : null ,
+                        /// --- Profile Picture ---
+                        Center(
+                          child: Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              CircleAvatar(
+                                radius: 55.r,
+                                backgroundColor: Colors.white.withOpacity(0.3),
+                                backgroundImage: user?.image != null ? NetworkImage(user!.image!) : null ,
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(6.r),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
                                 ),
-                                Container(
-                                  padding: EdgeInsets.all(6.r),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Icon(
-                                    Icons.edit,
-                                    size: 18.sp,
-                                    color: AppColors.primaryColor,
-                                  ),
+                                child: Icon(
+                                  Icons.edit,
+                                  size: 18.sp,
+                                  color: AppColors.primaryColor,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
+                        ),
 
-                          Gap(30.h),
+                        Gap(30.h),
 
-                          CustomUserTextField(
-                            controller: nameController,
-                            labelText: "name",
-                          ),
+                        CustomUserTextField(
+                          controller: nameController,
+                          labelText: "name",
+                        ),
 
-                          Gap(15.h),
+                        Gap(15.h),
 
-                          CustomUserTextField(
-                            controller: emailController,
-                            labelText: "Email Address",
-                          ),
-                          Gap(15.h),
-                          CustomUserTextField(
-                            controller: addressController,
-                            labelText: "Address",
-                          ),
-                          Gap(10.h),
-                          Divider(color: Colors.white.withOpacity(0.4), thickness: 1),
-                          Gap( 10.h),
-                         user?.viza == null ? _paymentTile(
-                            value: "viza",
-                            title: "Debit Card",
-                            subtitle: "3566 **** **** 0505",
-                            icon: Image.asset(AppAssets.viza, width: 55.w),
-                          ) : CustomUserTextField(
-                           controller: vizaController,
-                           labelText: "Viza",
-                         ),
-                        ],
-                      ),
+                        CustomUserTextField(
+                          controller: emailController,
+                          labelText: "Email Address",
+                        ),
+                        Gap(15.h),
+                        CustomUserTextField(
+                          controller: addressController,
+                          labelText: "Address",
+                        ),
+
+                        Gap(10.h),
+
+                        /// Divider
+                        Divider(color: Colors.white.withOpacity(0.4), thickness: 1),
+                        Gap( 10.h),
+                       user?.viza == null ? _paymentTile(
+                          value: "viza",
+                          title: "Debit Card",
+                          subtitle: "3566 **** **** 0505",
+                          icon: Image.asset(AppAssets.viza, width: 55.w),
+                        ) : CustomUserTextField(
+                         controller: vizaController,
+                         labelText: "Viza",
+                       ),
+                      ],
                     ),
                   ),
-                  Gap(10.h),
+  Gap(10.h),
                   Padding(
                     padding:  EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
                     child: Row(
@@ -201,7 +203,8 @@ class _ProfileViewState extends State<ProfileView> {
                         ),
                       ],
                     ),
-                  )
+                  ),
+                  Gap(80.h),
                 ],
               ),
             ),

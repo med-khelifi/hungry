@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -38,72 +40,75 @@ class _RootState extends State<Root> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primaryColor,
-      body: PageView(
-        controller: _pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: _screens,
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: AppColors.primaryColor,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(25.r),
-            topRight: Radius.circular(25.r),
+      backgroundColor: AppColors.whiteColor,
+      body: Stack(
+        children: [
+          // Your pages
+          PageView(
+            clipBehavior: Clip.none,
+            controller: _pageController,
+            physics: const NeverScrollableScrollPhysics(),
+            children: _screens,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
+
+
+          Positioned(
+            bottom: 20.h,
+            left: 20.w,
+            right: 20.w,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(30.r),
+                border: Border.all(
+                  color: Colors.black.withOpacity(0.1),
+                  width: 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.15),
+                    blurRadius: 25,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30.r),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
+                  child: BottomNavigationBar(
+                    backgroundColor: Colors.white.withOpacity(0.2),
+                    elevation: 0,
+                    currentIndex: _currentIndex,
+                    selectedItemColor: Colors.black87,
+                    unselectedItemColor: Colors.black54,
+                    type: BottomNavigationBarType.fixed,
+                    iconSize: 26.sp,
+                    selectedFontSize: 12.sp,
+                    unselectedFontSize: 11.sp,
+                    onTap: (index) {
+                      setState(() => _currentIndex = index);
+                      _pageController.animateToPage(
+                        index,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                    items: const [
+                      BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: 'Home'),
+                      BottomNavigationBarItem(icon: Icon(CupertinoIcons.cart), label: 'Cart'),
+                      BottomNavigationBarItem(icon: Icon(Icons.local_restaurant), label: 'Orders'),
+                      BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(25.r),
-            topRight: Radius.circular(25.r),
           ),
-          child: BottomNavigationBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            currentIndex: _currentIndex,
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.grey,
-            type: BottomNavigationBarType.fixed,
-            iconSize: 24.sp,
-            selectedFontSize: 12.sp,
-            unselectedFontSize: 11.sp,
-            onTap: (index) {
-              setState(() => _currentIndex = index);
-              _pageController.animateToPage(
-                index,
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-              );
-            },
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.home),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.cart),
-                label: 'Card',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.local_restaurant),
-                label: 'Orders',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }

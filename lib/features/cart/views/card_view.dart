@@ -35,7 +35,6 @@ class _CartViewState extends State<CartView> {
           icon: Icon(
             Icons.arrow_back,
             color: AppColors.secondColor,
-         //   fontWeight: FontWeight.w900,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -90,7 +89,7 @@ class _CartViewState extends State<CartView> {
                 ),
               ],
             ),
-            Gap(10.h),
+            Gap(100.h),
           ],
         ),
       ),
