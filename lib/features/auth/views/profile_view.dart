@@ -1,12 +1,17 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/app_assets.dart';
 import 'package:hungry/core/constants/app_colors.dart';
+import 'package:hungry/core/constants/app_routes.dart';
 import 'package:hungry/features/auth/data/auth_repo.dart';
 import 'package:hungry/features/auth/data/user_model.dart';
 import 'package:hungry/features/auth/widgets/custom_snack_bar.dart';
 import 'package:hungry/features/auth/widgets/custom_user_text_field.dart';
+import 'package:hungry/shared/choose_image_Dialog.dart';
 import 'package:hungry/shared/custom_text.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -24,8 +29,11 @@ class _ProfileViewState extends State<ProfileView> {
   late TextEditingController addressController;
   late TextEditingController vizaController;
    UserModel? user;
+   String? imagePath;
 
   bool isLoading = false;
+  bool isUpdating = false;
+  bool isLoggingOut = false;
   Future<void> loadUser() async {
     setState(() => isLoading = true);
     final userResponse = await _authRepo.getCurrentUserInfo();
@@ -35,7 +43,54 @@ class _ProfileViewState extends State<ProfileView> {
         CustomErrorSnackBar.show(context, userResponse.error?.message ?? "Login failed");
       }
     } else {
+      setState(() {
         user = userResponse.data;
+        _setUserInfo();
+      });
+
+    }
+  }
+
+  Future<void> updateProfile() async {
+    setState(() => isUpdating = true);
+    final userResponse = await _authRepo.updateUserInfo(
+        name: nameController.text.trim(),
+        email: emailController.text.trim(),
+        address: addressController.text.trim(),
+        viza: vizaController.text.trim(),
+        imagePath: imagePath ?? user?.image,
+    );
+    setState(() => isUpdating = false);
+    if (userResponse.isFailure) {
+      if (context.mounted) {
+        CustomErrorSnackBar.show(context, userResponse.error?.message ?? "Update failed");
+      }
+    } else {
+
+      if (context.mounted) {
+        CustomErrorSnackBar.show(context,"Profile updated successfully",isError: false);
+        loadUser();
+      }
+    }
+  }
+
+  Future<void> logout() async {
+    setState(() => isLoggingOut = true);
+    var res = await _authRepo.logout();
+    setState(() => isLoggingOut = false);
+
+    if (res.isFailure) {
+      if (context.mounted) {
+        CustomErrorSnackBar.show(context, res.error?.message ?? "Login failed");
+      }
+    } else {
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          Routes.login,
+              (route) => false,
+        );
+      }
     }
   }
   @override
@@ -46,20 +101,34 @@ class _ProfileViewState extends State<ProfileView> {
     emailController = TextEditingController();
     addressController = TextEditingController();
     vizaController = TextEditingController();
-    loadUser().then((value){
-
-      nameController.text = user?.name ?? "";
-      emailController.text = user?.email ?? "";
-      addressController.text = user?.address ?? "";
-    });
+    loadUser();
   }
+void _setUserInfo(){
+  nameController.text = user?.name ?? "";
+  emailController.text = user?.email ?? "";
+  addressController.text = user?.address ?? "";
+  vizaController.text = user?.viza ?? "";
 
+}
   @override
   void dispose() {
     nameController.dispose();
     emailController.dispose();
     addressController.dispose();
     super.dispose();
+  }
+
+  ImageProvider? _getProfileImage() {
+    if (imagePath != null && imagePath!.isNotEmpty) {
+      return FileImage(File(imagePath!));
+    }
+
+    if (user?.image != null && user!.image!.isNotEmpty) {
+      return NetworkImage(user!.image!);
+    }
+
+    // No image → return placeholder
+    return null;//const AssetImage("assets/images/placeholder.png");
   }
 
   @override
@@ -76,82 +145,88 @@ class _ProfileViewState extends State<ProfileView> {
             onTap: () => FocusScope.of(context).unfocus(),
             child: Skeletonizer(
               enabled: isLoading,
-              child: Column(
-                children: [
-                  SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 20.h),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Gap(10.h),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 20.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Gap(10.h),
 
-                        /// --- Profile Picture ---
-                        Center(
-                          child: Stack(
-                            alignment: Alignment.bottomRight,
-                            children: [
-                              CircleAvatar(
-                                radius: 55.r,
-                                backgroundColor: Colors.white.withOpacity(0.3),
-                                backgroundImage: user?.image != null ? NetworkImage(user!.image!) : null ,
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(6.r),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.edit,
-                                  size: 18.sp,
-                                  color: AppColors.primaryColor,
-                                ),
-                              ),
-                            ],
+                    /// --- Profile Picture ---
+                    Center(
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          CircleAvatar(
+                            radius: 55.r,
+                            backgroundColor: Colors.white.withOpacity(0.3),
+                            backgroundImage: _getProfileImage() ,
+
                           ),
-                        ),
-
-                        Gap(30.h),
-
-                        CustomUserTextField(
-                          controller: nameController,
-                          labelText: "name",
-                        ),
-
-                        Gap(15.h),
-
-                        CustomUserTextField(
-                          controller: emailController,
-                          labelText: "Email Address",
-                        ),
-                        Gap(15.h),
-                        CustomUserTextField(
-                          controller: addressController,
-                          labelText: "Address",
-                        ),
-
-                        Gap(10.h),
-
-                        /// Divider
-                        Divider(color: Colors.white.withOpacity(0.4), thickness: 1),
-                        Gap( 10.h),
-                       user?.viza == null ? _paymentTile(
-                          value: "viza",
-                          title: "Debit Card",
-                          subtitle: "3566 **** **** 0505",
-                          icon: Image.asset(AppAssets.viza, width: 55.w),
-                        ) : CustomUserTextField(
-                         controller: vizaController,
-                         labelText: "Viza",
-                       ),
-                      ],
+                          GestureDetector(
+                            onTap: ()async {
+                              final file =await showDialog(
+                                context: context,
+                                builder: (context) => const ChooseImageDialog(),
+                              );
+                              if(file != null){
+                                setState(() => imagePath = file.path);
+                              }
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(6.r),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.edit,
+                                size: 18.sp,
+                                color: AppColors.primaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-  Gap(10.h),
-                  Padding(
-                    padding:  EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
-                    child: Row(
+
+                    Gap(30.h),
+
+                    CustomUserTextField(
+                      controller: nameController,
+                      labelText: "name",
+                    ),
+
+                    Gap(15.h),
+
+                    CustomUserTextField(
+                      controller: emailController,
+                      labelText: "Email Address",
+                    ),
+                    Gap(15.h),
+                    CustomUserTextField(
+                      controller: addressController,
+                      labelText: "Address",
+                    ),
+
+                    Gap(10.h),
+
+                    /// Divider
+                    Divider(color: Colors.white.withOpacity(0.4), thickness: 1),
+                    Gap( 10.h),
+                   user?.viza == null ? _paymentTile(
+                      value: "viza",
+                      title: "Debit Card",
+                      subtitle: "3566 **** **** 0505",
+                      icon: Image.asset(AppAssets.viza, width: 55.w),
+                    ) : CustomUserTextField(
+                     controller: vizaController,
+                     labelText: "Viza",
+                   ),
+
+                    Gap(30.h),
+                    Row(
                       children: [
                         /// Save Button
                         Expanded(
@@ -159,7 +234,9 @@ class _ProfileViewState extends State<ProfileView> {
                             width: double.infinity,
                             height: 50.h,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                updateProfile();
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.whiteColor,
                                 foregroundColor: AppColors.primaryColor,
@@ -167,23 +244,23 @@ class _ProfileViewState extends State<ProfileView> {
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
                               ),
-                              child: Text(
-                                "Save Changes",
-                                style: TextStyle(
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              child: isUpdating ? CupertinoActivityIndicator() : CustomText(
+                                text: "Save Changes",
+                                color: AppColors.primaryColor,
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ),
+
                         Gap(15.w),
                         Expanded(
                           child: SizedBox(
                             width: double.infinity,
                             height: 50.h,
                             child: ElevatedButton(
-                              onPressed: () {},
+                              onPressed: logout,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.redAccent,
                                 foregroundColor: Colors.white,
@@ -191,21 +268,19 @@ class _ProfileViewState extends State<ProfileView> {
                                   borderRadius: BorderRadius.circular(12.r),
                                 ),
                               ),
-                              child: Text(
-                                "Logout",
-                                style: TextStyle(
-                                  fontSize: 18.sp,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              child:isLoggingOut ? CupertinoActivityIndicator() : CustomText(
+                                text: "Logout",
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  Gap(80.h),
-                ],
+                    Gap(80.h),
+                  ],
+                ),
               ),
             ),
           ),
