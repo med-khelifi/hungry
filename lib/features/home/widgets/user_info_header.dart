@@ -32,8 +32,8 @@ class UserInfoHeader extends StatelessWidget {
           ],
         ),
         CircleAvatar(
-          backgroundImage: AssetImage(AppAssets.profile),
-          radius: 40.r,
+          backgroundImage: AssetImage(AppAssets.placeholder),
+          radius: 42.r,
         ),
       ],
     );

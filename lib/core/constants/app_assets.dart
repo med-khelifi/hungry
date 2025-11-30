@@ -8,4 +8,5 @@ class AppAssets {
   static const String plus = "assets/plus.svg";
   static const String dollar = "assets/dollar.png";
   static const String viza = "assets/viza.png";
+  static const String placeholder = "assets/placeholder.jpg";
 }

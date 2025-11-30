@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hungry/core/constants/app_colors.dart';
 import 'package:hungry/core/constants/app_routes.dart';
+import 'package:hungry/features/auth/data/auth_repo.dart';
 
 import '../core/constants/app_assets.dart';
 
@@ -16,35 +17,40 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  late AuthRepo auth;
+
+  void handelNavigation() async{
+    final res = await auth.tryAutoLogin();
+    if(res)
+    {
+      Navigator.pushReplacementNamed(context, Routes.root);
+    }
+    else {
+      Navigator.pushReplacementNamed(context, Routes.login);
+    }
+  }
+
 
   @override
   void initState() {
     super.initState();
 
-    // Animation Controller
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
     );
 
-    // Fade Animation
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
-    // Scale Animation
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
-    // Start animation
-    _controller.forward();
+    auth = AuthRepo();
 
-    // Navigate after 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, Routes.login);
+    // ابدأ الأنيميشن
+    _controller.forward().then((_) {
+      handelNavigation();
     });
   }
 

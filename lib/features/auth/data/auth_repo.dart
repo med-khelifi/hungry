@@ -9,7 +9,33 @@ import 'package:hungry/core/utils/response.dart';
 import 'package:hungry/features/auth/data/user_model.dart';
 
 class AuthRepo {
+  // Singleton
+  static final AuthRepo _instance = AuthRepo._internal();
+  factory AuthRepo() => _instance;
+  AuthRepo._internal();
+
   final ApiService _apiService = ApiService();
+
+ Future<bool> tryAutoLogin() async{
+   final token = await PrefHelper.getToken();
+
+    if(token == null || token.isEmpty){
+      _isGuest = true;
+      _currentUser = null;
+      return false;
+    }
+    final res = await getCurrentUserInfo();
+    if(res.isFailure){
+      return false;
+    }
+    _currentUser = res.data;
+    _isGuest = false;
+    return true;
+ }
+bool _isGuest = false;
+  UserModel? _currentUser;
+ get currentUser => _currentUser;
+ get isGuest => _isGuest;
 
   Future<Response<UserModel>> login({
     required String email,
@@ -50,7 +76,7 @@ class AuthRepo {
       if (user.token != null && user.token!.isNotEmpty) {
         await PrefHelper.saveToken(user.token!);
       }
-
+      _isGuest = false;
       return Response.success(user);
     } catch (e) {
       return Response.failure(ApiError(message: e.toString()));
@@ -136,9 +162,7 @@ class AuthRepo {
       if (userData == null || userData is! Map) {
         return Response.failure(ApiError(message: "Invalid user object"));
       }
-
       final user = UserModel.fromJson(userData as Map<String, dynamic>);
-
       return Response.success(user);
     } catch (e) {
       return Response.failure(ApiError(message: e.toString()));
@@ -166,8 +190,8 @@ class AuthRepo {
         "name": name,
         "email": email,
         "address": address,
-        "Viza": viza,
-        "image": imageFile ?? null,
+        "Visa": viza,
+        "image": imageFile,
       });
 
       var result = await _apiService.post(
@@ -202,7 +226,7 @@ class AuthRepo {
       }
 
       final user = UserModel.fromJson(userData as Map<String, dynamic>);
-
+      _currentUser = user;
       return Response.success(user);
     } catch (e) {
       return Response.failure(ApiError(message: e.toString()));
@@ -211,15 +235,12 @@ class AuthRepo {
 
   Future<Response<bool>> logout() async {
     try {
-
       var result = await _apiService.post(
         '/logout',null);
 
       if (result is ApiError) {
         return Response.failure(result);
       }
-
-
       final data = result.data;
 
       if (data == null || data is! Map) {
@@ -233,15 +254,9 @@ class AuthRepo {
           ApiError(message: data["message"] ?? "Unknown backend error"),
         );
       }
-
-      final userData = data["data"];
-
-    //  if (userData == null || userData is! Map) {
-    //      return Response.failure(ApiError(message: "Invalid user object"));
-    //    }
-
-      //final user = UserModel.fromJson(userData as Map<String, dynamic>);
      await PrefHelper.clearToken();
+     _currentUser = null;
+     _isGuest = true;
       return Response.success(true);
     } catch (e) {
       return Response.failure(ApiError(message: e.toString()));

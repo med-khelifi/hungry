@@ -9,6 +9,7 @@ import 'package:hungry/core/constants/app_colors.dart';
 import 'package:hungry/core/constants/app_routes.dart';
 import 'package:hungry/features/auth/data/auth_repo.dart';
 import 'package:hungry/features/auth/data/user_model.dart';
+import 'package:hungry/features/auth/views/guest_view.dart';
 import 'package:hungry/features/auth/widgets/custom_snack_bar.dart';
 import 'package:hungry/features/auth/widgets/custom_user_text_field.dart';
 import 'package:hungry/shared/choose_image_Dialog.dart';
@@ -34,6 +35,7 @@ class _ProfileViewState extends State<ProfileView> {
   bool isLoading = false;
   bool isUpdating = false;
   bool isLoggingOut = false;
+  bool isGuest = false;
   Future<void> loadUser() async {
     setState(() => isLoading = true);
     final userResponse = await _authRepo.getCurrentUserInfo();
@@ -73,7 +75,6 @@ class _ProfileViewState extends State<ProfileView> {
       }
     }
   }
-
   Future<void> logout() async {
     setState(() => isLoggingOut = true);
     var res = await _authRepo.logout();
@@ -97,11 +98,23 @@ class _ProfileViewState extends State<ProfileView> {
   void initState() {
     super.initState();
     _authRepo = AuthRepo();
+    if (_authRepo.isGuest) {
+      return;
+    }
     nameController = TextEditingController();
     emailController = TextEditingController();
     addressController = TextEditingController();
     vizaController = TextEditingController();
-    loadUser();
+
+    if(_authRepo.currentUser != null){
+      setState(() {
+        user = _authRepo.currentUser;
+        _setUserInfo();
+      });
+    }
+    else{
+      loadUser();
+    }
   }
 void _setUserInfo(){
   nameController.text = user?.name ?? "";
@@ -126,16 +139,16 @@ void _setUserInfo(){
     if (user?.image != null && user!.image!.isNotEmpty) {
       return NetworkImage(user!.image!);
     }
-
     // No image → return placeholder
-    return null;//const AssetImage("assets/images/placeholder.png");
+    return const AssetImage(AppAssets.placeholder);
   }
 
   @override
   Widget build(BuildContext context) {
 
 
-    return Scaffold(
+    return _authRepo.isGuest ?  GuestView() :
+      Scaffold(
       backgroundColor: AppColors.primaryColor,
       body: SafeArea(
         child: RefreshIndicator(
@@ -215,14 +228,16 @@ void _setUserInfo(){
                     /// Divider
                     Divider(color: Colors.white.withOpacity(0.4), thickness: 1),
                     Gap( 10.h),
-                   user?.viza == null ? _paymentTile(
-                      value: "viza",
+                   user?.viza != null ?
+                   _paymentTile(
+                      value: "visa",
                       title: "Debit Card",
                       subtitle: "3566 **** **** 0505",
                       icon: Image.asset(AppAssets.viza, width: 55.w),
-                    ) : CustomUserTextField(
+                    )
+                       : CustomUserTextField(
                      controller: vizaController,
-                     labelText: "Viza",
+                     labelText: "Visa",
                    ),
 
                     Gap(30.h),
@@ -300,7 +315,7 @@ void _setUserInfo(){
       elevation: 3,
       child: RadioListTile<String>(
         value: value,
-        groupValue: "viza",
+        groupValue: "visa",
         activeColor: AppColors.secondColor,
         onChanged: (value) {
           // setState(() => selectedPayment = value!);
