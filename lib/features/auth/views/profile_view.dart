@@ -232,7 +232,7 @@ void _setUserInfo(){
                    _paymentTile(
                       value: "visa",
                       title: "Debit Card",
-                      subtitle: "3566 **** **** 0505",
+                      subtitle: user?.viza ?? "",
                       icon: Image.asset(AppAssets.viza, width: 55.w),
                     )
                        : CustomUserTextField(
