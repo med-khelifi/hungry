@@ -102,7 +102,7 @@ class _HomeViewState extends State<HomeView> {
                       childCount: _products?.length ?? 6,
                       (context, index) => GestureDetector(
                         onTap: () =>
-                            Navigator.pushNamed(context, Routes.productDetails),
+                            Navigator.pushNamed(context, Routes.productDetails,arguments: _products?[index]),
                         child: ItemCard(
                           image: _products?[index]?.imageUrl,
                           title:_products?[index]?.name ?? "Cheeseburger",

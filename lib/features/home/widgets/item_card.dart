@@ -43,6 +43,7 @@ class ItemCard extends StatelessWidget {
               fontWeight: FontWeight.w500,
               fontSize: 14.sp,
               color: AppColors.secondColor,
+              maxLines: 1,
             ),
             CustomText(text: "⭐ $rating", color: AppColors.secondColor),
           ],

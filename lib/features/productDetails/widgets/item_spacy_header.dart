@@ -18,74 +18,123 @@ class _ItemSpacyHeaderState extends State<ItemSpacyHeader> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(right: 21.w),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Expanded(child: Image.asset(AppAssets.productDetails)),
-          Gap(20.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    text: "Customize",
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: AppColors.secondColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    children: [
-                      TextSpan(
-                        text:
-                            " Your Burger\n to Your Tastes. Ultimate\n Experience",
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          color: AppColors.secondColor,
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Gap(25.h),
-                    CustomText(
-                      text: "Spacy",
-                      color: AppColors.secondColor,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14.sp,
-                    ),
-                    Gap(10.h),
-                    Slider(
-                      value: _sliderValue,
-                      onChanged: (value) {
-                        setState(() {
-                          _sliderValue = value;
-                        });
-                      },
-                     // padding: EdgeInsets.zero,
-                      activeColor: AppColors.primaryColor,
-                      inactiveColor: AppColors.sliderInactive,
-                    ),
-                    Gap(7.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        CustomText(text: "🥶"),
-                        CustomText(text: "🌶️"),
-                      ],
-                    ),
-                  ],
-                ),
+
+          /// IMAGE
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20.r),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 12.r,
+                  offset: const Offset(0, 6),
+                )
               ],
             ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.r),
+              child: Image.asset(
+                AppAssets.productDetails,
+                height: 180.h,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
+
+          Gap(25.h),
+
+          /// TITLE
+          CustomText(
+            text: "Customize Your Burger",
+            fontSize: 20.sp,
+            fontWeight: FontWeight.bold,
+            color: AppColors.secondColor,
+            textAlign: TextAlign.center,
+          ),
+
+          Gap(10.h),
+
+          /// DESCRIPTION
+          CustomText(
+            text:
+            "Personalize your burger just the way you like.\nTaste the ultimate experience.",
+            fontSize: 14.sp,
+            color: AppColors.greyColor,
+            textAlign: TextAlign.center,
+          ),
+
+          Gap(35.h),
+
+          /// SPICY LEVEL TITLE
+          Align(
+            alignment: Alignment.centerLeft,
+            child: CustomText(
+              text: "Spicy Level",
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w700,
+              color: AppColors.secondColor,
+            ),
+          ),
+
+          Gap(15.h),
+
+          /// CHILI PROGRESS BAR
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              for (int i = 1; i <= 5; i++)
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: (_sliderValue * 5 >= i) ? 1 : 0.20,
+                  child: Text(
+                    "🌶️",
+                    style: TextStyle(fontSize: 26.sp),
+                  ),
+                ),
+            ],
+          ),
+
+          Gap(12.h),
+
+          /// SLIDER
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              trackHeight: 4.h,
+              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.r,elevation: 0),
+            ),
+            child: Slider(
+              padding: EdgeInsets.zero,
+              value: _sliderValue,
+              onChanged: (value) => setState(() => _sliderValue = value),
+              activeColor: AppColors.primaryColor,
+              inactiveColor: AppColors.sliderInactive,
+            ),
+          ),
+
+          Gap(5.h),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CustomText(
+                text: "Mild",
+                fontSize: 12.sp,
+                color: AppColors.greyColor,
+              ),
+              CustomText(
+                text: "Very Hot",
+                fontSize: 12.sp,
+                color: AppColors.greyColor,
+              ),
+            ],
+          ),
+
+          Gap(20.h),
         ],
       ),
     );
