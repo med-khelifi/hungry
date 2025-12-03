@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hungry/core/constants/app_assets.dart';
 import 'package:hungry/core/constants/app_colors.dart';
 import 'package:hungry/shared/custom_text.dart';
 
@@ -15,7 +16,7 @@ class ItemCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String rating;
-  final String image;
+  final String? image;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,11 @@ class ItemCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(image, height: 180.h),
+            image == null
+                ? Image.asset(AppAssets.test, height: 150.h)
+                : Image.network(image!, height: 150.h,errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(AppAssets.test, height: 150.h);
+                },),
             CustomText(
               text: title,
               fontSize: 16.sp,

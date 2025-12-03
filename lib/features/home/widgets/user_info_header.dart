@@ -7,8 +7,9 @@ import 'package:hungry/core/constants/app_colors.dart';
 import 'package:hungry/shared/custom_text.dart';
 
 class UserInfoHeader extends StatelessWidget {
-  const UserInfoHeader({super.key});
-
+  const UserInfoHeader({super.key, required this.username, this.imageUrl});
+  final String username;
+  final String? imageUrl;
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -25,17 +26,30 @@ class UserInfoHeader extends StatelessWidget {
             ),
             Gap(10.h),
             CustomText(
-              text: "Hello, Rich Sonic",
+              text: "Hello, $username",
               fontSize: 18.sp,
               color: Color(0xff6A6A6A),
             ),
           ],
         ),
-        CircleAvatar(
-          backgroundImage: AssetImage(AppAssets.placeholder),
-          radius: 42.r,
-        ),
-      ],
+    CircleAvatar(
+    radius: 42.r,
+    backgroundColor: Colors.grey.shade200,
+    child: ClipOval(
+    child: Image.network(
+    imageUrl ?? "",
+    fit: BoxFit.cover,
+    errorBuilder: (context, error, stackTrace) {
+    return Image.asset(
+    AppAssets.placeholder,
+    fit: BoxFit.cover,
+    );
+    },
+    ),
+    ),
+    )
+
+    ],
     );
   }
 }

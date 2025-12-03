@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:dio/dio.dart' show FormData, MultipartFile;
@@ -16,26 +15,27 @@ class AuthRepo {
 
   final ApiService _apiService = ApiService();
 
- Future<bool> tryAutoLogin() async{
-   final token = await PrefHelper.getToken();
+  Future<bool> tryAutoLogin() async {
+    final token = await PrefHelper.getToken();
 
-    if(token == null || token.isEmpty){
+    if (token == null || token.isEmpty) {
       _isGuest = true;
       _currentUser = null;
       return false;
     }
     final res = await getCurrentUserInfo();
-    if(res.isFailure){
+    if (res.isFailure) {
       return false;
     }
     _currentUser = res.data;
     _isGuest = false;
     return true;
- }
-bool _isGuest = false;
+  }
+
+  bool _isGuest = false;
   UserModel? _currentUser;
- get currentUser => _currentUser;
- get isGuest => _isGuest;
+  get currentUser => _currentUser;
+  get isGuest => _isGuest;
 
   Future<Response<UserModel>> login({
     required String email,
@@ -169,7 +169,6 @@ bool _isGuest = false;
     }
   }
 
-
   Future<Response<UserModel>> updateUserInfo({
     required String name,
     required String email,
@@ -180,12 +179,11 @@ bool _isGuest = false;
     MultipartFile? imageFile;
     if (imagePath != null) {
       imageFile = await MultipartFile.fromFile(
-    imagePath,
-    filename: imagePath.split('/').last,
-    );
+        imagePath,
+        filename: imagePath.split('/').last,
+      );
     }
     try {
-
       FormData formData = FormData.fromMap({
         "name": name,
         "email": email,
@@ -194,16 +192,11 @@ bool _isGuest = false;
         "image": imageFile,
       });
 
-      var result = await _apiService.post(
-        '/update-profile',
-        formData,
-
-      );
+      var result = await _apiService.post('/update-profile', formData);
 
       if (result is ApiError) {
         return Response.failure(result);
       }
-
 
       final data = result.data;
 
@@ -235,8 +228,7 @@ bool _isGuest = false;
 
   Future<Response<bool>> logout() async {
     try {
-      var result = await _apiService.post(
-        '/logout',null);
+      var result = await _apiService.post('/logout', null);
 
       if (result is ApiError) {
         return Response.failure(result);
@@ -254,9 +246,9 @@ bool _isGuest = false;
           ApiError(message: data["message"] ?? "Unknown backend error"),
         );
       }
-     await PrefHelper.clearToken();
-     _currentUser = null;
-     _isGuest = true;
+      await PrefHelper.clearToken();
+      _currentUser = null;
+      _isGuest = true;
       return Response.success(true);
     } catch (e) {
       return Response.failure(ApiError(message: e.toString()));
