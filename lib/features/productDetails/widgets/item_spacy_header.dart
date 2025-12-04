@@ -6,8 +6,11 @@ import 'package:hungry/core/constants/app_colors.dart';
 import 'package:hungry/shared/custom_text.dart';
 
 class ItemSpacyHeader extends StatefulWidget {
-  const ItemSpacyHeader({super.key});
-
+  const ItemSpacyHeader({super.key,required this.imagePath,required this.name,required this.des, required this.onSliderValueChanged});
+  final String? imagePath;
+  final String? name;
+  final String? des;
+  final Function(double value) onSliderValueChanged;
   @override
   State<ItemSpacyHeader> createState() => _ItemSpacyHeaderState();
 }
@@ -37,9 +40,12 @@ class _ItemSpacyHeaderState extends State<ItemSpacyHeader> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20.r),
-              child: Image.asset(
+              child: widget.imagePath == null ? Image.asset(
                 AppAssets.productDetails,
-                height: 180.h,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ) : Image.network(
+                widget.imagePath!,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
@@ -50,7 +56,7 @@ class _ItemSpacyHeaderState extends State<ItemSpacyHeader> {
 
           /// TITLE
           CustomText(
-            text: "Customize Your Burger",
+            text: widget.name ?? "Customize Your Burger",
             fontSize: 20.sp,
             fontWeight: FontWeight.bold,
             color: AppColors.secondColor,
@@ -62,7 +68,7 @@ class _ItemSpacyHeaderState extends State<ItemSpacyHeader> {
           /// DESCRIPTION
           CustomText(
             text:
-            "Personalize your burger just the way you like.\nTaste the ultimate experience.",
+            widget.des ?? "Personalize your burger just the way you like.\nTaste the ultimate experience.",
             fontSize: 14.sp,
             color: AppColors.greyColor,
             textAlign: TextAlign.center,

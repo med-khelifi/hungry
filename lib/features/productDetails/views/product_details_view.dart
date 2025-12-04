@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/app_colors.dart';
 import 'package:hungry/features/auth/widgets/custom_snack_bar.dart';
+import 'package:hungry/features/home/data/product_item_model.dart';
 import 'package:hungry/features/productDetails/data/product_details_repo.dart';
 import 'package:hungry/features/productDetails/data/topping_option_model.dart';
 import 'package:hungry/features/productDetails/widgets/item_spacy_header.dart';
@@ -28,12 +29,22 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
 
   List<int> _selectedToppings = [];
   List<int> _selectedSideOptions = [];
+
+  late ProductItemModel? _product;
+  double _spacyValue = 0;
   @override
   void initState() {
     super.initState();
     _productDetailsRepo = ProductDetailsRepo();
     _loadToppings();
     _loadSideOptions();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final arg = ModalRoute.of(context)!.settings.arguments;
+    _product = arg is ProductItemModel ? arg as ProductItemModel : null;
   }
   void _loadToppings() async {
     final res = await _productDetailsRepo.fetchToppings();
@@ -87,7 +98,9 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Gap(10.h),
-              ItemSpacyHeader(),
+              ItemSpacyHeader(imagePath: _product?.imageUrl, name: _product?.name, des: _product?.description, onSliderValueChanged: (double value) {
+                _spacyValue = value;
+              },),
               Gap(50.h),
               Padding(
                 padding: EdgeInsets.only(left: 20.0.w),
