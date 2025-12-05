@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
@@ -6,7 +7,7 @@ import 'package:hungry/features/auth/widgets/custom_snack_bar.dart';
 import 'package:hungry/features/home/data/product_item_model.dart';
 import 'package:hungry/features/productDetails/data/product_details_repo.dart';
 import 'package:hungry/features/productDetails/data/topping_option_model.dart';
-import 'package:hungry/features/productDetails/widgets/item_spacy_header.dart';
+import 'package:hungry/features/productDetails/widgets/item_spicy_header.dart';
 import 'package:hungry/features/productDetails/widgets/price_details.dart';
 import 'package:hungry/features/productDetails/widgets/topping_list.dart';
 import 'package:hungry/shared/custom_button.dart';
@@ -27,11 +28,13 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
   List<bool> _toppingSelection = List.filled(5, false);
   List<bool> _sideOptionSelection = List.filled(5, false);
 
-  List<int> _selectedToppings = [];
-  List<int> _selectedSideOptions = [];
+  List<int> selectedToppings = [];
+  List<int> selectedSideOptions = [];
 
   late ProductItemModel? _product;
-  double _spacyValue = 0;
+  double _spicyValue = 0;
+  bool isAdding = false;
+
   @override
   void initState() {
     super.initState();
@@ -40,12 +43,43 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
     _loadSideOptions();
   }
 
+  Future<void> addToCart() async {
+    final data = {
+      "items": [
+        {
+          "product_id": _product?.id,
+          "quantity": 1,
+          "spicy": _spicyValue,
+          "toppings": selectedToppings,
+          "side_options": selectedSideOptions,
+        },
+      ],
+    };
+    setState(()=> isAdding = true,);
+    final res = await _productDetailsRepo.addToCart(data);
+    setState(()=> isAdding = false,);
+    if(res.isSuccess){
+      CustomErrorSnackBar.show(
+        context,
+        "Item added to cart",
+        isError: false
+      );
+    }else{
+      CustomErrorSnackBar.show(
+        context,
+        res.error?.message ?? "Failed to add item to cart",
+      );
+    }
+
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final arg = ModalRoute.of(context)!.settings.arguments;
-    _product = arg is ProductItemModel ? arg as ProductItemModel : null;
+    _product = arg is ProductItemModel ? arg : null;
   }
+
   void _loadToppings() async {
     final res = await _productDetailsRepo.fetchToppings();
     if (res.isSuccess) {
@@ -53,14 +87,14 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
         _toppings = res.data;
         _toppingSelection = List.filled(_toppings?.length ?? 5, false);
       });
-    }
-    else {
+    } else {
       CustomErrorSnackBar.show(
         context,
         res.error?.message ?? "Failed to load toppings",
       );
     }
   }
+
   void _loadSideOptions() async {
     final res = await _productDetailsRepo.fetchSideOptions();
     if (res.isSuccess) {
@@ -68,14 +102,14 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
         _sideOptions = res.data;
         _sideOptionSelection = List.filled(_sideOptions?.length ?? 5, false);
       });
-    }
-    else {
+    } else {
       CustomErrorSnackBar.show(
         context,
         res.error?.message ?? "Failed to load side options",
       );
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,9 +132,14 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Gap(10.h),
-              ItemSpacyHeader(imagePath: _product?.imageUrl, name: _product?.name, des: _product?.description, onSliderValueChanged: (double value) {
-                _spacyValue = value;
-              },),
+              ItemSpicyHeader(
+                imagePath: _product?.imageUrl,
+                name: _product?.name,
+                des: _product?.description,
+                onSliderValueChanged: (double value) {
+                  _spicyValue = value;
+                },
+              ),
               Gap(50.h),
               Padding(
                 padding: EdgeInsets.only(left: 20.0.w),
@@ -112,13 +151,22 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                 ),
               ),
               Gap(10.h),
-              Skeletonizer(enabled: _toppings == null,child: ToppingList(toppings: _toppings, selection: _toppingSelection, onToppingSelected: (int index,int id) {
-               if(_toppings == null || _toppings!.isEmpty) return;
-                setState(() {
-                  _toppingSelection[index] = !_toppingSelection[index];
-                  _selectedToppings.contains(id)? _selectedToppings.remove(id): _selectedToppings.add(id);
-                });
-              },)),
+              Skeletonizer(
+                enabled: _toppings == null,
+                child: ToppingList(
+                  toppings: _toppings,
+                  selection: _toppingSelection,
+                  onToppingSelected: (int index, int id) {
+                    if (_toppings == null || _toppings!.isEmpty) return;
+                    setState(() {
+                      _toppingSelection[index] = !_toppingSelection[index];
+                      selectedToppings.contains(id)
+                          ? selectedToppings.remove(id)
+                          : selectedToppings.add(id);
+                    });
+                  },
+                ),
+              ),
               Gap(50.h),
               Padding(
                 padding: EdgeInsets.only(left: 20.0.w),
@@ -130,13 +178,23 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                 ),
               ),
               Gap(10.h),
-              Skeletonizer(enabled: _sideOptions == null,child: ToppingList(toppings: _sideOptions, selection: _sideOptionSelection, onToppingSelected: (int index,int id) {
-                if(_sideOptions == null || _sideOptions!.isEmpty) return;
-                setState(() {
-                  _sideOptionSelection[index] = !_sideOptionSelection[index];
-                  _selectedSideOptions.contains(id)? _selectedSideOptions.remove(id): _selectedSideOptions.add(id);
-                });
-              },)),
+              Skeletonizer(
+                enabled: _sideOptions == null,
+                child: ToppingList(
+                  toppings: _sideOptions,
+                  selection: _sideOptionSelection,
+                  onToppingSelected: (int index, int id) {
+                    if (_sideOptions == null || _sideOptions!.isEmpty) return;
+                    setState(() {
+                      _sideOptionSelection[index] =
+                          !_sideOptionSelection[index];
+                      selectedSideOptions.contains(id)
+                          ? selectedSideOptions.remove(id)
+                          : selectedSideOptions.add(id);
+                    });
+                  },
+                ),
+              ),
               Gap(50.h),
               Padding(
                 padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 35.h),
@@ -155,7 +213,11 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                         PriceDetails(text: "19.18"),
                       ],
                     ),
-                    CustomButton(text: "Add to cart", onPressed: () {}),
+                   CustomButton(text: "Add to cart",
+                       onPressed: addToCart,
+                       widget: isAdding ? CupertinoActivityIndicator(color: AppColors.whiteColor,):
+                       Icon(Icons.add_shopping_cart,color: AppColors.whiteColor,)
+                   ),
                   ],
                 ),
               ),

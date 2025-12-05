@@ -75,9 +75,9 @@ class _HomeViewState extends State<HomeView> {
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 15.w),
                         child: UserInfoHeader(
-                          username:_authRepo.isGuest
+                          username:_authRepo.isGuest || _authRepo.currentUser == null
                             ?  "Guest"
-                             : _authRepo.currentUser.name,
+                             : _authRepo.currentUser.name ?? "",
                           imageUrl: _authRepo.currentUser?.image,
                         ),
                       ),

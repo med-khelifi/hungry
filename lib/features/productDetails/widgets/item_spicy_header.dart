@@ -5,19 +5,24 @@ import 'package:hungry/core/constants/app_assets.dart';
 import 'package:hungry/core/constants/app_colors.dart';
 import 'package:hungry/shared/custom_text.dart';
 
-class ItemSpacyHeader extends StatefulWidget {
-  const ItemSpacyHeader({super.key,required this.imagePath,required this.name,required this.des, required this.onSliderValueChanged});
+class ItemSpicyHeader extends StatefulWidget {
+  const ItemSpicyHeader({
+    super.key,
+    required this.imagePath,
+    required this.name,
+    required this.des,
+    required this.onSliderValueChanged,
+  });
   final String? imagePath;
   final String? name;
   final String? des;
   final Function(double value) onSliderValueChanged;
   @override
-  State<ItemSpacyHeader> createState() => _ItemSpacyHeaderState();
+  State<ItemSpicyHeader> createState() => _ItemSpicyHeaderState();
 }
 
-class _ItemSpacyHeaderState extends State<ItemSpacyHeader> {
+class _ItemSpicyHeaderState extends State<ItemSpicyHeader> {
   double _sliderValue = 0.5;
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -25,7 +30,6 @@ class _ItemSpacyHeaderState extends State<ItemSpacyHeader> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-
           /// IMAGE
           Container(
             decoration: BoxDecoration(
@@ -35,20 +39,22 @@ class _ItemSpacyHeaderState extends State<ItemSpacyHeader> {
                   color: Colors.black.withOpacity(0.1),
                   blurRadius: 12.r,
                   offset: const Offset(0, 6),
-                )
+                ),
               ],
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20.r),
-              child: widget.imagePath == null ? Image.asset(
-                AppAssets.productDetails,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ) : Image.network(
-                widget.imagePath!,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+              child: widget.imagePath == null
+                  ? Image.asset(
+                      AppAssets.productDetails,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.network(
+                      widget.imagePath!,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
 
@@ -68,7 +74,8 @@ class _ItemSpacyHeaderState extends State<ItemSpacyHeader> {
           /// DESCRIPTION
           CustomText(
             text:
-            widget.des ?? "Personalize your burger just the way you like.\nTaste the ultimate experience.",
+                widget.des ??
+                "Personalize your burger just the way you like.\nTaste the ultimate experience.",
             fontSize: 14.sp,
             color: AppColors.greyColor,
             textAlign: TextAlign.center,
@@ -97,10 +104,7 @@ class _ItemSpacyHeaderState extends State<ItemSpacyHeader> {
                 AnimatedOpacity(
                   duration: const Duration(milliseconds: 200),
                   opacity: (_sliderValue * 5 >= i) ? 1 : 0.20,
-                  child: Text(
-                    "🌶️",
-                    style: TextStyle(fontSize: 26.sp),
-                  ),
+                  child: Text("🌶️", style: TextStyle(fontSize: 26.sp)),
                 ),
             ],
           ),
@@ -111,12 +115,18 @@ class _ItemSpacyHeaderState extends State<ItemSpacyHeader> {
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
               trackHeight: 4.h,
-              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.r,elevation: 0),
+              thumbShape: RoundSliderThumbShape(
+                enabledThumbRadius: 8.r,
+                elevation: 0,
+              ),
             ),
             child: Slider(
               padding: EdgeInsets.zero,
               value: _sliderValue,
-              onChanged: (value) => setState(() => _sliderValue = value),
+              onChanged: (value) => setState(() {
+                _sliderValue = value;
+                widget.onSliderValueChanged(value);
+              }),
               activeColor: AppColors.primaryColor,
               inactiveColor: AppColors.sliderInactive,
             ),
