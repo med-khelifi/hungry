@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:hungry/core/utils/helpers.dart';
 
 class ProductItemModel {

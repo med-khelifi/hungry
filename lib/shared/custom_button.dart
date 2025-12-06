@@ -41,6 +41,7 @@ class CustomButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius ?? 20.r),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           CustomText(
             text: text,
@@ -48,9 +49,9 @@ class CustomButton extends StatelessWidget {
             fontWeight: fontWeight ?? FontWeight.w600,
             color: textColor ?? AppColors.whiteColor,
           ),
+          Gap(widget == null ? 0 : 15.w),
           if(widget != null)
-            Gap(15.w)
-           , widget!,
+           widget!,
         ],
       ),
     );

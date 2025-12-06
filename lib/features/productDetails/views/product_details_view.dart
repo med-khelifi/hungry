@@ -210,7 +210,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                           fontSize: 16.sp,
                           color: AppColors.secondColor,
                         ),
-                        PriceDetails(text: "19.18"),
+                        PriceDetails(text: _product?.price.toString() ?? "0.00"),
                       ],
                     ),
                    CustomButton(text: "Add to cart",
