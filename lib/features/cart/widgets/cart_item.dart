@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
@@ -23,36 +24,100 @@ class CartItem extends StatelessWidget {
   final String? image;
   final String? name;
   final VoidCallback onPressedIncrease;
-  final VoidCallback onPressedRemove;
+  final Future<bool> Function() onPressedRemove;
   final VoidCallback onPressedDecrease;
+
+
 
   @override
   Widget build(BuildContext context) {
+    bool isLoading = false;
     return Dismissible(
       key: ValueKey(id),
       direction: DismissDirection.startToEnd,
       confirmDismiss: (direction) async {
-        return await showDialog<bool>(
+        final result = await showModalBottomSheet<bool>(
           context: context,
-          builder: (context) => AlertDialog(
-            title: CustomText(text: 'Remove Item', fontSize: 18.sp, fontWeight: FontWeight.w600, color: AppColors.secondColor),
-            content:  CustomText(text:'Are you sure you want to remove this item from the cart?', fontSize: 14.sp, fontWeight: FontWeight.w600, color: AppColors.secondColor),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: CustomText(text:'Cancel',color: AppColors.secondColor,fontSize: 16.sp,fontWeight: FontWeight.w600,),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: CustomText(text: 'Remove',color: AppColors.secondColor,fontSize: 16.sp,fontWeight: FontWeight.w600,),
-              ),
-            ],
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
           ),
+          builder: (context) {
+            return StatefulBuilder(
+              builder: (context, setModalState) {
+                return Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CustomText(
+                        text: 'Remove Item',
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondColor,
+                      ),
+                      Gap(12.h),
+                      CustomText(
+                        text:
+                        'Are you sure you want to remove this item from the cart?',
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.secondColor,
+                        textAlign: TextAlign.center,
+                      ),
+                      Gap(20.h),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomButton(
+                              text: 'Cancel',
+                              onPressed: () =>
+                                  Navigator.pop(context, false),
+                              textColor: AppColors.whiteColor,
+                            ),
+                          ),
+                          Gap(10.w),
+                          Expanded(
+                            child: CustomButton(
+                              widget: isLoading
+                                  ? CupertinoActivityIndicator(
+                                color: AppColors.whiteColor,
+                              )
+                                  : null,
+                              text: 'Remove',
+                              onPressed: () async {
+                                setModalState(() => isLoading = true);
+                                final res = await onPressedRemove();
+                                setModalState(() => isLoading = false);
+                                Navigator.pop(context, res);
+                              },
+                              textColor: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Gap(10.h),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
         );
+
+        return result ?? false;
       },
       background: Container(
+        padding: EdgeInsets.only(left: 60.w),
         color: AppColors.secondColor.withOpacity(0.12),
-        child: Icon(Icons.delete,color: AppColors.redColor,size: 40.sp,),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Icon(
+            Icons.delete,
+            color: AppColors.redColor,
+            size: 40.sp,
+          ),
+        ),
       ),
       child: Card(
         elevation: 6,
@@ -99,9 +164,7 @@ class CartItem extends StatelessWidget {
                   ),
                 ],
               ),
-
               Gap(15.w),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -121,18 +184,14 @@ class CartItem extends StatelessWidget {
                             child: const Icon(Icons.remove),
                           ),
                         ),
-
                         Gap(25.w),
-
                         CustomText(
                           text: itemCount.toString(),
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w600,
                           color: AppColors.secondColor,
                         ),
-
                         Gap(25.w),
-
                         InkWell(
                           onTap: onPressedIncrease,
                           child: Container(
@@ -146,16 +205,6 @@ class CartItem extends StatelessWidget {
                           ),
                         ),
                       ],
-                    ),
-
-                    Gap(25.h),
-
-                    CustomButton(
-                      text: "Remove",
-                      onPressed: onPressedRemove,
-                      height: 45.h,
-                      width: 140.w,
-                      borderRadius: 30.r,
                     ),
                   ],
                 ),

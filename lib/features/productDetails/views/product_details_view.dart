@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/app_colors.dart';
+import 'package:hungry/features/auth/data/auth_repo.dart';
 import 'package:hungry/features/auth/widgets/custom_snack_bar.dart';
 import 'package:hungry/features/home/data/product_item_model.dart';
 import 'package:hungry/features/productDetails/data/product_details_repo.dart';
@@ -23,6 +24,7 @@ class ProductDetailsView extends StatefulWidget {
 
 class _ProductDetailsViewState extends State<ProductDetailsView> {
   late ProductDetailsRepo _productDetailsRepo;
+  late AuthRepo _authRepo;
   List<ToppingOptionModel>? _toppings;
   List<ToppingOptionModel>? _sideOptions;
   List<bool> _toppingSelection = List.filled(5, false);
@@ -39,11 +41,19 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
   void initState() {
     super.initState();
     _productDetailsRepo = ProductDetailsRepo();
+    _authRepo = AuthRepo();
     _loadToppings();
     _loadSideOptions();
   }
 
   Future<void> addToCart() async {
+    if(_authRepo.isGuest){
+      CustomErrorSnackBar.show(
+        context,
+        "Please login to add item to cart",
+      );
+      return;
+    }
     final data = {
       "items": [
         {
@@ -80,7 +90,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
     _product = arg is ProductItemModel ? arg : null;
   }
 
-  void _loadToppings() async {
+  Future<void> _loadToppings() async {
     final res = await _productDetailsRepo.fetchToppings();
     if (res.isSuccess) {
       setState(() {
@@ -94,8 +104,7 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
       );
     }
   }
-
-  void _loadSideOptions() async {
+  Future<void> _loadSideOptions() async {
     final res = await _productDetailsRepo.fetchSideOptions();
     if (res.isSuccess) {
       setState(() {
@@ -126,102 +135,113 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Gap(10.h),
-              ItemSpicyHeader(
-                imagePath: _product?.imageUrl,
-                name: _product?.name,
-                des: _product?.description,
-                onSliderValueChanged: (double value) {
-                  _spicyValue = value;
-                },
-              ),
-              Gap(50.h),
-              Padding(
-                padding: EdgeInsets.only(left: 20.0.w),
-                child: CustomText(
-                  text: "Toppings",
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.secondColor,
-                ),
-              ),
-              Gap(10.h),
-              Skeletonizer(
-                enabled: _toppings == null,
-                child: ToppingList(
-                  toppings: _toppings,
-                  selection: _toppingSelection,
-                  onToppingSelected: (int index, int id) {
-                    if (_toppings == null || _toppings!.isEmpty) return;
-                    setState(() {
-                      _toppingSelection[index] = !_toppingSelection[index];
-                      selectedToppings.contains(id)
-                          ? selectedToppings.remove(id)
-                          : selectedToppings.add(id);
-                    });
+      body: RefreshIndicator(
+        color: AppColors.primaryColor,
+        onRefresh: () async {
+          setState(() {
+            _toppings = null;
+            _sideOptions = null;
+          });
+         await _loadToppings();
+          await _loadSideOptions();
+        },
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Gap(10.h),
+                ItemSpicyHeader(
+                  imagePath: _product?.imageUrl,
+                  name: _product?.name,
+                  des: _product?.description,
+                  onSliderValueChanged: (double value) {
+                    _spicyValue = value;
                   },
                 ),
-              ),
-              Gap(50.h),
-              Padding(
-                padding: EdgeInsets.only(left: 20.0.w),
-                child: CustomText(
-                  text: "Side options",
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.secondColor,
+                Gap(50.h),
+                Padding(
+                  padding: EdgeInsets.only(left: 20.0.w),
+                  child: CustomText(
+                    text: "Toppings",
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.secondColor,
+                  ),
                 ),
-              ),
-              Gap(10.h),
-              Skeletonizer(
-                enabled: _sideOptions == null,
-                child: ToppingList(
-                  toppings: _sideOptions,
-                  selection: _sideOptionSelection,
-                  onToppingSelected: (int index, int id) {
-                    if (_sideOptions == null || _sideOptions!.isEmpty) return;
-                    setState(() {
-                      _sideOptionSelection[index] =
-                          !_sideOptionSelection[index];
-                      selectedSideOptions.contains(id)
-                          ? selectedSideOptions.remove(id)
-                          : selectedSideOptions.add(id);
-                    });
-                  },
+                Gap(10.h),
+                Skeletonizer(
+                  enabled: _toppings == null,
+                  child: ToppingList(
+                    toppings: _toppings,
+                    selection: _toppingSelection,
+                    onToppingSelected: (int index, int id) {
+                      if (_toppings == null || _toppings!.isEmpty) return;
+                      setState(() {
+                        _toppingSelection[index] = !_toppingSelection[index];
+                        selectedToppings.contains(id)
+                            ? selectedToppings.remove(id)
+                            : selectedToppings.add(id);
+                      });
+                    },
+                  ),
                 ),
-              ),
-              Gap(50.h),
-              Padding(
-                padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 35.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomText(
-                          text: "Total",
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16.sp,
-                          color: AppColors.secondColor,
-                        ),
-                        PriceDetails(text: _product?.price.toString() ?? "0.00"),
-                      ],
-                    ),
-                   CustomButton(text: "Add to cart",
-                       onPressed: addToCart,
-                       widget: isAdding ? CupertinoActivityIndicator(color: AppColors.whiteColor,):
-                       Icon(Icons.add_shopping_cart,color: AppColors.whiteColor,)
-                   ),
-                  ],
+                Gap(50.h),
+                Padding(
+                  padding: EdgeInsets.only(left: 20.0.w),
+                  child: CustomText(
+                    text: "Side options",
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.secondColor,
+                  ),
                 ),
-              ),
-            ],
+                Gap(10.h),
+                Skeletonizer(
+                  enabled: _sideOptions == null,
+                  child: ToppingList(
+                    toppings: _sideOptions,
+                    selection: _sideOptionSelection,
+                    onToppingSelected: (int index, int id) {
+                      if (_sideOptions == null || _sideOptions!.isEmpty) return;
+                      setState(() {
+                        _sideOptionSelection[index] =
+                            !_sideOptionSelection[index];
+                        selectedSideOptions.contains(id)
+                            ? selectedSideOptions.remove(id)
+                            : selectedSideOptions.add(id);
+                      });
+                    },
+                  ),
+                ),
+                Gap(50.h),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 35.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomText(
+                            text: "Total",
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16.sp,
+                            color: AppColors.secondColor,
+                          ),
+                          PriceDetails(text: _product?.price.toString() ?? "0.00"),
+                        ],
+                      ),
+                     CustomButton(text: "Add to cart",
+                         onPressed: addToCart,
+                         widget: isAdding ? CupertinoActivityIndicator(color: AppColors.whiteColor,):
+                         Icon(Icons.add_shopping_cart,color: AppColors.whiteColor,)
+                     ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

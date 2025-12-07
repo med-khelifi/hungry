@@ -39,7 +39,7 @@ class ApiService {
     }
   }
 
-  Future<dynamic> delete({required String endpoint, Map<String, dynamic>? data,String? query}) async {
+  Future<dynamic> delete({required String endpoint, Map<String, dynamic>? data,dynamic? query}) async {
     try {
       final response = await _dioClient.dio.delete(endpoint, data: data,queryParameters: query);
       return response;

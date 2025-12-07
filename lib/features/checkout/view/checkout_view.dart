@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/app_assets.dart';
 import 'package:hungry/core/constants/app_colors.dart';
+import 'package:hungry/features/auth/data/auth_repo.dart';
 import 'package:hungry/features/checkout/widgets/success_payment_dialog.dart';
 import 'package:hungry/features/productDetails/widgets/price_details.dart';
 import 'package:hungry/shared/custom_button.dart';
@@ -16,10 +17,24 @@ class CheckoutView extends StatefulWidget {
 }
 
 class _CheckoutViewState extends State<CheckoutView> {
+
+   double totalPrice =0;
+  double taxes = 0.30;
+  double deliveryFees = 1.50;
+  double allPrice = 0;
   bool isAgree = false;
+  late AuthRepo authRepo;
 
   // selected payment method
   String? selectedPayment = "Cash";
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    authRepo = AuthRepo();
+    totalPrice = ModalRoute.of(context)?.settings.arguments as double ?? 0;
+    allPrice = totalPrice + taxes + deliveryFees;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +70,11 @@ class _CheckoutViewState extends State<CheckoutView> {
                       padding: EdgeInsets.only(left: 15.w),
                       child: Column(
                         children: [
-                          _summaryRow("Order", "\$0.30", false),
+                          _summaryRow("Order", "\$$totalPrice", false),
                           Gap(10.h),
-                          _summaryRow("Taxes", "\$0.30", false),
+                          _summaryRow("Taxes", "\$$taxes", false),
                           Gap(10.h),
-                          _summaryRow("Delivery fees", "\$1.50", false),
+                          _summaryRow("Delivery fees", "\$$deliveryFees", false),
                           Gap(10.h),
                           Divider(
                             thickness: 1,
@@ -68,7 +83,7 @@ class _CheckoutViewState extends State<CheckoutView> {
                           Gap(25.h),
                           _summaryRow(
                             "Total:",
-                            "\$18.28",
+                            "\$$allPrice",
                             true,
                             color: AppColors.secondColor,
                           ),
@@ -102,7 +117,8 @@ class _CheckoutViewState extends State<CheckoutView> {
 
                     Gap(20.h),
 
-                    _paymentTile(
+                   if(authRepo.currentUser!.viza != null)
+                     _paymentTile(
                       value: "Card",
                       title: "Debit Card",
                       subtitle: "3566 **** **** 0505",
@@ -111,7 +127,8 @@ class _CheckoutViewState extends State<CheckoutView> {
 
                     Gap(20.h),
 
-                    Row(
+                   if(authRepo.currentUser!.viza != null)
+                     Row(
                       children: [
                         Checkbox(
                           value: isAgree,
@@ -169,7 +186,7 @@ class _CheckoutViewState extends State<CheckoutView> {
                         fontSize: 16.sp,
                         color: AppColors.secondColor,
                       ),
-                      PriceDetails(text: "19.18"),
+                      PriceDetails(text: allPrice.toString()),
                     ],
                   ),
                   CustomButton(

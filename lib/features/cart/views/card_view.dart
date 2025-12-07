@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/app_colors.dart';
 import 'package:hungry/core/constants/app_routes.dart';
+import 'package:hungry/features/auth/data/auth_repo.dart';
+import 'package:hungry/features/auth/views/guest_view.dart';
 import 'package:hungry/features/auth/widgets/custom_snack_bar.dart';
 import 'package:hungry/features/cart/data/cart_model.dart';
 import 'package:hungry/features/cart/data/cart_repo.dart';
@@ -20,12 +22,16 @@ class CartView extends StatefulWidget {
 
 class _CartViewState extends State<CartView> {
   late CartRepo cartRepo;
+  late AuthRepo authRepo;
    CartModel? cart;
   @override
   void initState() {
     super.initState();
+    authRepo = AuthRepo();
     cartRepo = CartRepo();
-    fetchCart();
+    if(!authRepo.isGuest) {
+      fetchCart();
+    }
   }
   void fetchCart() async {
     final response = await cartRepo.fetchCart();
@@ -38,10 +44,21 @@ class _CartViewState extends State<CartView> {
      CustomErrorSnackBar.show(context, response.error?.message ?? "Failed to fetch cart");
     }
   }
+  Future<bool> removeItem(int itemId) async {
+    final response = await cartRepo.deleteItemFromCart(itemId);
+    if (response.isFailure) {
+      CustomErrorSnackBar.show(context, response.error?.message ?? "Failed to remove item from cart");
+      return false;
+    }
+    return true;
+  }
 
 
   @override
   Widget build(BuildContext context) {
+    if (authRepo.isGuest) {
+      return GuestView();
+    }
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
@@ -66,9 +83,24 @@ class _CartViewState extends State<CartView> {
                   itemBuilder: (context, index) => CartItem(
                     id: cart?.items[index]?.itemId ?? index,
                     itemCount: cart?.items[index]?.quantity?.toString() ?? "0",
-                    onPressedDecrease: () {},
-                    onPressedIncrease: () {},
-                    onPressedRemove: () {},
+                    onPressedDecrease: () {
+                      final qty = cart?.items[index]?.quantity ?? 1;
+                      if(qty > 1) {
+                        setState(() {
+                          cart?.items[index]?.quantity = qty - 1;
+                          cart?.totalPrice -= cart?.items[index]?.price ?? 0;
+                        });
+                      }
+                    },
+                    onPressedIncrease: () {
+                      final qty = cart?.items[index]?.quantity ?? 1;
+                      setState(() {
+                        cart?.items[index]?.quantity = qty + 1;
+                        cart?.totalPrice += cart?.items[index]?.price ?? 0;
+                      });
+                    },
+                    onPressedRemove: () async =>
+                      await removeItem(cart?.items[index]?.itemId ?? index),
                     image: cart?.items[index]?.image,
                     name: cart?.items[index]?.name,
                   ),
@@ -102,7 +134,7 @@ class _CartViewState extends State<CartView> {
                     if(cart == null){
                       return;
                     }
-                    Navigator.pushNamed(context, Routes.checkout);
+                    Navigator.pushNamed(context, Routes.checkout, arguments: cart?.totalPrice);
                   },
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w600,

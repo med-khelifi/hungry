@@ -6,7 +6,7 @@ class CartItemMode {
   final int productId;
   final String name;
   final String image;
-  final int quantity;
+   int quantity;
   final double price;
   final double spicy;
   final List<ToppingOptionModel> toppings;

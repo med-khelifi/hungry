@@ -3,7 +3,7 @@ import 'package:hungry/features/cart/data/cart_item_mode.dart';
 
 class CartModel {
   final int id;
-  final double totalPrice;
+   double totalPrice;
   final List<CartItemMode> items;
   CartModel({
     required this.id,

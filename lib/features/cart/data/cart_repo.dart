@@ -47,7 +47,7 @@ class CartRepo {
 
   Future<Response<bool>> deleteItemFromCart(int itemId) async {
     try {
-      final result = await _apiService.delete(endpoint: '/cart/remove/',query:itemId.toString());
+      final result = await _apiService.delete(endpoint: '/cart/remove/$itemId');
       if (result is ApiError) {
         return Response.failure(result);
       }
