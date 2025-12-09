@@ -17,8 +17,6 @@ class Root extends StatefulWidget {
 
 class _RootState extends State<Root> {
   int _currentIndex = 0;
-  late final PageController _pageController;
-
   final List<Widget> _screens = const [
     HomeView(),
     CartView(),
@@ -29,13 +27,6 @@ class _RootState extends State<Root> {
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(initialPage: _currentIndex);
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
   }
 
   @override
@@ -46,10 +37,9 @@ class _RootState extends State<Root> {
       body: Stack(
         children: [
           // Your pages
-          PageView(
+          IndexedStack(
             clipBehavior: Clip.none,
-            controller: _pageController,
-            physics: const NeverScrollableScrollPhysics(),
+            index: _currentIndex,
             children: _screens,
           ),
 
@@ -90,11 +80,6 @@ class _RootState extends State<Root> {
                     unselectedFontSize: 11.sp,
                     onTap: (index) {
                       setState(() => _currentIndex = index);
-                      _pageController.animateToPage(
-                        index,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
                     },
                     items: const [
                       BottomNavigationBarItem(icon: Icon(CupertinoIcons.home), label: 'Home'),

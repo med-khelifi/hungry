@@ -36,6 +36,9 @@ class _HomeViewState extends State<HomeView> {
   }
 
   Future<void> _loadProducts() async {
+    setState(() {
+      _products = null;
+    });
     final res = await _productRepo.fetchProducts();
     if (res.isSuccess) {
       setState(() {
@@ -55,73 +58,76 @@ class _HomeViewState extends State<HomeView> {
       backgroundColor: AppColors.whiteColor,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                backgroundColor: AppColors.whiteColor,
-                shadowColor: AppColors.whiteColor,
-                surfaceTintColor: AppColors.whiteColor,
-                pinned: true,
-                floating: false,
-                snap: false,
-                automaticallyImplyLeading: false,
-                toolbarHeight: 280.h,
-                elevation: 0,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Column(
-                    children: [
-                      Gap(20.h),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 15.w),
-                        child: UserInfoHeader(
-                          username:_authRepo.isGuest || _authRepo.currentUser == null
-                            ?  "Guest"
-                             : _authRepo.currentUser.name ?? "",
-                          imageUrl: _authRepo.currentUser?.image,
+        child: RefreshIndicator(
+          onRefresh: _loadProducts,
+          child: SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  backgroundColor: AppColors.whiteColor,
+                  shadowColor: AppColors.whiteColor,
+                  surfaceTintColor: AppColors.whiteColor,
+                  pinned: true,
+                  floating: false,
+                  snap: false,
+                  automaticallyImplyLeading: false,
+                  toolbarHeight: 280.h,
+                  elevation: 0,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Column(
+                      children: [
+                        Gap(20.h),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15.w),
+                          child: UserInfoHeader(
+                            username:_authRepo.isGuest || _authRepo.currentUser == null
+                              ?  "Guest"
+                               : _authRepo.currentUser.name ?? "",
+                            imageUrl: _authRepo.currentUser?.image,
+                          ),
                         ),
-                      ),
-                      Gap(20.h),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 15.w),
-                        child: SearchBoxHeader(),
-                      ),
-                      Gap(20.h),
-                      CategoriesListHeader(categories: _categories),
-                    ],
-                  ),
-                ),
-              ),
-              SliverGap(15.h),
-              SliverPadding(
-                padding: EdgeInsets.symmetric(horizontal: 15.w),
-                sliver: Skeletonizer.sliver(
-                  enabled: _products == null,
-                  child: SliverGrid(
-                    delegate: SliverChildBuilderDelegate(
-                      childCount: _products?.length ?? 6,
-                      (context, index) => GestureDetector(
-                        onTap: () =>
-                            Navigator.pushNamed(context, Routes.productDetails,arguments: _products?[index]),
-                        child: ItemCard(
-                          image: _products?[index]?.imageUrl,
-                          title:_products?[index]?.name ?? "Cheeseburger",
-                          subtitle: _products?[index]?.description ?? "Wendy's Burger",
-                          rating:_products?[index]?.rating.toString() ?? "4.9",
+                        Gap(20.h),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15.w),
+                          child: SearchBoxHeader(),
                         ),
-                      ),
-                    ),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 10.h,
-                      crossAxisSpacing: 10.w,
-                      childAspectRatio: 0.73,
+                        Gap(20.h),
+                        CategoriesListHeader(categories: _categories),
+                      ],
                     ),
                   ),
                 ),
-              ),
-              SliverGap(100.h),
-            ],
+                SliverGap(15.h),
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  sliver: Skeletonizer.sliver(
+                    enabled: _products == null,
+                    child: SliverGrid(
+                      delegate: SliverChildBuilderDelegate(
+                        childCount: _products?.length ?? 6,
+                        (context, index) => GestureDetector(
+                          onTap: () =>
+                              Navigator.pushNamed(context, Routes.productDetails,arguments: _products?[index]),
+                          child: ItemCard(
+                            image: _products?[index]?.imageUrl,
+                            title:_products?[index]?.name ?? "Cheeseburger",
+                            subtitle: _products?[index]?.description ?? "Wendy's Burger",
+                            rating:_products?[index]?.rating.toString() ?? "4.9",
+                          ),
+                        ),
+                      ),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 10.h,
+                        crossAxisSpacing: 10.w,
+                        childAspectRatio: 0.73,
+                      ),
+                    ),
+                  ),
+                ),
+                SliverGap(100.h),
+              ],
+            ),
           ),
         ),
       ),

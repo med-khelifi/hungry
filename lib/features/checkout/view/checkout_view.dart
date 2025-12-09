@@ -1,9 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:hungry/core/constants/app_assets.dart';
 import 'package:hungry/core/constants/app_colors.dart';
 import 'package:hungry/features/auth/data/auth_repo.dart';
+import 'package:hungry/features/auth/widgets/custom_snack_bar.dart';
+import 'package:hungry/features/cart/data/cart_model.dart';
+import 'package:hungry/features/checkout/data/checkout_repo.dart';
+import 'package:hungry/features/checkout/data/order_item_model.dart';
 import 'package:hungry/features/checkout/widgets/success_payment_dialog.dart';
 import 'package:hungry/features/productDetails/widgets/price_details.dart';
 import 'package:hungry/shared/custom_button.dart';
@@ -17,8 +22,11 @@ class CheckoutView extends StatefulWidget {
 }
 
 class _CheckoutViewState extends State<CheckoutView> {
-
-   double totalPrice =0;
+  List<OrderItemModel?> orderItems = [];
+  CheckoutRepo checkoutRepo = CheckoutRepo();
+  double totalPrice =0;
+  bool isLoading = false;
+  CartModel? cart;
   double taxes = 0.30;
   double deliveryFees = 1.50;
   double allPrice = 0;
@@ -32,8 +40,8 @@ class _CheckoutViewState extends State<CheckoutView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     authRepo = AuthRepo();
-    totalPrice = ModalRoute.of(context)?.settings.arguments as double ?? 0;
-    allPrice = totalPrice + taxes + deliveryFees;
+    cart = ModalRoute.of(context)?.settings.arguments as CartModel;
+    allPrice = cart?.totalPrice ?? 0 + taxes + deliveryFees;
   }
 
   @override
@@ -191,12 +199,30 @@ class _CheckoutViewState extends State<CheckoutView> {
                   ),
                   CustomButton(
                     text: "Pay Now",
+                    widget: isLoading ? CupertinoActivityIndicator( color: AppColors.whiteColor,) : null,
                     fontSize: 18.sp,
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => SuccessPaymentDialog(),
-                      );
+                    onPressed: () async {
+                      orderItems = cart?.items.map((e) => OrderItemModel(
+                        itemId: e.itemId,
+                        quantity: e.quantity,
+                        spicy: e.spicy,
+                        toppings: e.toppings,
+                        sideOptions: e.sideOptions,
+                      )).toList() ?? [];
+                      final data = {
+                        "items" : orderItems.map((e) => e?.toJsonWithToppingsIds() ?? {}).toList(),
+                      };
+                      print(data);
+                      setState(() => isLoading = true,);
+                        final res = await checkoutRepo.checkout(data);
+                        setState(() => isLoading = false,);
+                        if(res.isSuccess){
+                          showDialog(context: context, builder: (context) => SuccessPaymentDialog(),);
+                        }
+                        else{
+                          CustomErrorSnackBar.show(context, res.error?.message ?? "Something went wrong");
+                        }
+
                     },
                   ),
                 ],

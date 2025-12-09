@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hungry/core/constants/app_routes.dart';
-import 'package:hungry/features/cart/views/card_view.dart';
 
 class Hungry extends StatelessWidget {
   const Hungry({super.key});

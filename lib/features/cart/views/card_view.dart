@@ -33,7 +33,7 @@ class _CartViewState extends State<CartView> {
       fetchCart();
     }
   }
-  void fetchCart() async {
+  Future<void> fetchCart() async {
     final response = await cartRepo.fetchCart();
     if (response.isSuccess) {
       setState(() {
@@ -79,33 +79,37 @@ class _CartViewState extends State<CartView> {
             Expanded(
               child: Skeletonizer(
                 enabled: cart == null,
-                child: ListView.separated(
-                  itemBuilder: (context, index) => CartItem(
-                    id: cart?.items[index]?.itemId ?? index,
-                    itemCount: cart?.items[index]?.quantity?.toString() ?? "0",
-                    onPressedDecrease: () {
-                      final qty = cart?.items[index]?.quantity ?? 1;
-                      if(qty > 1) {
+                child: RefreshIndicator(
+                  color: AppColors.primaryColor,
+                  onRefresh: fetchCart,
+                  child: ListView.separated(
+                    itemBuilder: (context, index) => CartItem(
+                      id: cart?.items[index]?.itemId ?? index,
+                      itemCount: cart?.items[index]?.quantity?.toString() ?? "0",
+                      onPressedDecrease: () {
+                        final qty = cart?.items[index]?.quantity ?? 1;
+                        if(qty > 1) {
+                          setState(() {
+                            cart?.items[index]?.quantity = qty - 1;
+                            cart?.totalPrice -= cart?.items[index]?.price ?? 0;
+                          });
+                        }
+                      },
+                      onPressedIncrease: () {
+                        final qty = cart?.items[index]?.quantity ?? 1;
                         setState(() {
-                          cart?.items[index]?.quantity = qty - 1;
-                          cart?.totalPrice -= cart?.items[index]?.price ?? 0;
+                          cart?.items[index]?.quantity = qty + 1;
+                          cart?.totalPrice += cart?.items[index]?.price ?? 0;
                         });
-                      }
-                    },
-                    onPressedIncrease: () {
-                      final qty = cart?.items[index]?.quantity ?? 1;
-                      setState(() {
-                        cart?.items[index]?.quantity = qty + 1;
-                        cart?.totalPrice += cart?.items[index]?.price ?? 0;
-                      });
-                    },
-                    onPressedRemove: () async =>
-                      await removeItem(cart?.items[index]?.itemId ?? index),
-                    image: cart?.items[index]?.image,
-                    name: cart?.items[index]?.name,
+                      },
+                      onPressedRemove: () async =>
+                        await removeItem(cart?.items[index]?.itemId ?? index),
+                      image: cart?.items[index]?.image,
+                      name: cart?.items[index]?.name,
+                    ),
+                    separatorBuilder: (context, index) => Gap(20.h),
+                    itemCount: cart?.items.length ?? 4,
                   ),
-                  separatorBuilder: (context, index) => Gap(20.h),
-                  itemCount: cart?.items.length ?? 4,
                 ),
               ),
             ),
@@ -134,7 +138,7 @@ class _CartViewState extends State<CartView> {
                     if(cart == null){
                       return;
                     }
-                    Navigator.pushNamed(context, Routes.checkout, arguments: cart?.totalPrice);
+                    Navigator.pushNamed(context, Routes.checkout, arguments: cart);
                   },
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w600,
