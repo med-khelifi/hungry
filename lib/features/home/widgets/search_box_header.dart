@@ -4,7 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hungry/core/constants/app_colors.dart';
 
 class SearchBoxHeader extends StatelessWidget {
-  const SearchBoxHeader({super.key});
+  const SearchBoxHeader({super.key, required this.onSearch});
+
+  final Function(String) onSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +14,7 @@ class SearchBoxHeader extends StatelessWidget {
       elevation: 5.h,
       borderRadius: BorderRadius.circular(20.r),
       child: TextField(
+        onChanged: onSearch,
         decoration: InputDecoration(
           prefixIcon: Icon(CupertinoIcons.search, color: AppColors.secondColor),
           hintText: "Search",

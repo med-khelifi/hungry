@@ -25,6 +25,8 @@ class _HomeViewState extends State<HomeView> {
   late AuthRepo _authRepo;
   late ProductRepo _productRepo;
   List<ProductItemModel?>? _products;
+  List<ProductItemModel?>? _searchedProducts = [];
+  bool isSearch = false;
 
   @override
   void initState() {
@@ -89,7 +91,18 @@ class _HomeViewState extends State<HomeView> {
                         Gap(20.h),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 15.w),
-                          child: SearchBoxHeader(),
+                          child: SearchBoxHeader(onSearch: (query) {
+                            if(_products == null || query.isEmpty){
+                              setState(() {
+                                isSearch = false;
+                              });
+                            }else{
+                              setState(() {
+                                _searchedProducts = _products?.where((product) => product?.name?.toLowerCase().contains(query.toLowerCase()) ?? false).toList();
+                                isSearch = true;
+                              });
+                            }
+                          },),
                         ),
                         Gap(20.h),
                         CategoriesListHeader(categories: _categories),
@@ -104,17 +117,20 @@ class _HomeViewState extends State<HomeView> {
                     enabled: _products == null,
                     child: SliverGrid(
                       delegate: SliverChildBuilderDelegate(
-                        childCount: _products?.length ?? 6,
-                        (context, index) => GestureDetector(
+                        childCount: isSearch ? _searchedProducts?.length ?? 6 : _products?.length ?? 6,
+                        (context, index) {
+                          final product = isSearch ? _searchedProducts![index] : _products?[index];
+                          return GestureDetector(
                           onTap: () =>
-                              Navigator.pushNamed(context, Routes.productDetails,arguments: _products?[index]),
+                              Navigator.pushNamed(context, Routes.productDetails,arguments: product),
                           child: ItemCard(
-                            image: _products?[index]?.imageUrl,
-                            title:_products?[index]?.name ?? "Cheeseburger",
-                            subtitle: _products?[index]?.description ?? "Wendy's Burger",
-                            rating:_products?[index]?.rating.toString() ?? "4.9",
+                            image: product?.imageUrl,
+                            title: product?.name ?? "Cheeseburger",
+                            subtitle: product?.description ?? "Wendy's Burger",
+                            rating:product?.rating.toString() ?? "4.9",
                           ),
-                        ),
+                        );
+                        },
                       ),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
