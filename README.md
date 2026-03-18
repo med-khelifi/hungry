@@ -298,7 +298,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 **Your Name**
 
 - GitHub: [@med-khelif](https://github.com/med-khelif)
-- Email: your.email@example.com
+- Email: khelifim440@gmail.com
 
 ---
 
@@ -312,7 +312,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📞 Support
 
-For support, email your.email@example.com or open an issue on the GitHub repository.
+For support, email khelifim440@gmail.com or open an issue on the GitHub repository.
 
 ---
 
